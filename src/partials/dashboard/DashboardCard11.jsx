@@ -12,7 +12,7 @@ function DashboardCard11() {
       {
         label: 'Having difficulties using the product',
         data: [131],
-        backgroundColor: tailwindConfig().theme.colors.violet[500],
+        backgroundColor: tailwindConfig().theme.colors.sky[800],
         hoverBackgroundColor: tailwindConfig().theme.colors.violet[600],
         barPercentage: 1,
         categoryPercentage: 1,

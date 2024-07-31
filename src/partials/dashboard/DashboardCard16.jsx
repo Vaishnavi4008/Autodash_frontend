@@ -7,12 +7,12 @@ import { tailwindConfig } from '../../utils/Utils';
 function DashboardCard06() {
 
   const chartData = {
-    labels: ['Market Yard', 'Viman Nagar'],
+    labels: ['Pune', 'Mumbai', 'Chennai'],
     datasets: [
       {
-        label: 'Revenue',
+        label: 'Top Countries',
         data: [
-          70, 25,
+          70, 10, 25,
         ],
         backgroundColor: [
           tailwindConfig().theme.colors.sky[800],
@@ -32,7 +32,7 @@ function DashboardCard06() {
   return (
     <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
       <header className="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
-        <h2 className="font-semibold text-gray-800 dark:text-gray-100"></h2>Market Yard vs Viman Nagar 
+        <h2 className="font-semibold text-gray-800 dark:text-gray-100">Review Freq. (City Wise)</h2>
       </header>
       {/* Chart built with Chart.js 3 */}
       {/* Change the height attribute to adjust the chart height */}

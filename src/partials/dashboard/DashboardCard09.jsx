@@ -19,7 +19,7 @@ function DashboardCard09() {
         data: [
           6200, 9200, 6600, 8800, 5200, 9200,
         ],
-        backgroundColor: tailwindConfig().theme.colors.violet[500],
+        backgroundColor: tailwindConfig().theme.colors.sky[800],
         hoverBackgroundColor: tailwindConfig().theme.colors.violet[600],
         barPercentage: 0.7,
         categoryPercentage: 0.7,

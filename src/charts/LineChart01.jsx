@@ -36,7 +36,7 @@ function LineChart01({
         },
         scales: {
           y: {
-            display: false,
+            display: true,
             beginAtZero: true,
           },
           x: {
@@ -45,7 +45,7 @@ function LineChart01({
               parser: 'MM-DD-YYYY',
               unit: 'month',
             },
-            display: false,
+            display: true,
           },
         },
         plugins: {
