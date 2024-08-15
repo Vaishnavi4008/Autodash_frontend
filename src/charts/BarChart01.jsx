@@ -69,7 +69,7 @@ function BarChart01({ data, width, height }) {
             },
           },
           x: {
-            type: "time",
+            type: "category",
             time: {
               parser: "MM-DD-YYYY",
               unit: "month",
