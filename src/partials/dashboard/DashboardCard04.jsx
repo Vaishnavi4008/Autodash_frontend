@@ -1,37 +1,70 @@
 import React from "react";
-import BarChart from "../../charts/BarChart01";
-
-// Import utilities
+import { Bar } from "react-chartjs-2";
 import { tailwindConfig } from "../../utils/Utils";
 
 function DashboardCard04({ fetchedChartData }) {
   if (!fetchedChartData) return null;
-  console.log({ fetchedChartData });
 
+  // Define a broader range of colors
+  const colors = [
+    tailwindConfig().theme.colors.sky[800],
+    tailwindConfig().theme.colors.sky[500],
+    tailwindConfig().theme.colors.violet[800],
+    tailwindConfig().theme.colors.teal[500],
+    tailwindConfig().theme.colors.orange[600],
+    tailwindConfig().theme.colors.pink[500],
+    tailwindConfig().theme.colors.red[500],
+    tailwindConfig().theme.colors.green[600],
+  ];
+
+  // Prepare the chart data
   const chartData = {
-    labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"],
-    datasets: [
-      // Light blue bars
-      {
-        label: "Pune Store",
-        data: [800, 1600, 900, 1300, 1950, 1700],
-        backgroundColor: tailwindConfig().theme.colors.sky[500],
-        hoverBackgroundColor: tailwindConfig().theme.colors.sky[600],
-        barPercentage: 0.7,
-        categoryPercentage: 0.7,
-        borderRadius: 4,
+    labels: fetchedChartData.labels,
+    datasets: fetchedChartData.dataset.map((dataItem, index) => ({
+      label: dataItem.label || `Dataset ${index + 1}`, // Use dataset's label
+      data: dataItem.data,
+      backgroundColor: colors[index % colors.length], // Cycle through colors
+      hoverBackgroundColor: colors[index % colors.length],
+      borderWidth: 1,
+    })),
+  };
+
+  // Chart options
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
       },
-      // Blue bars
-      {
-        label: "Outside Pune",
-        data: [4900, 2600, 5350, 4800, 5200, 4800],
-        backgroundColor: tailwindConfig().theme.colors.sky[800],
-        hoverBackgroundColor: tailwindConfig().theme.colors.violet[600],
-        barPercentage: 0.7,
-        categoryPercentage: 0.7,
-        borderRadius: 4,
+      title: {
+        display: true,
+        text: 'Comparison of Different Stores',
       },
-    ],
+      // Disable data labels
+      datalabels: {
+        display: false, // Disable data labels if you use chartjs-plugin-datalabels
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Stores',
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Sales Value',
+        },
+        beginAtZero: true,
+      },
+    },
+    // Disable tooltips if you don't want to display values on hover
+    tooltips: {
+      enabled: false, 
+    },
   };
 
   return (
@@ -41,9 +74,10 @@ function DashboardCard04({ fetchedChartData }) {
           Pune Store VS Outside Pune
         </h2>
       </header>
-      {/* Chart built with Chart.js 3 */}
-      {/* Change the height attribute to adjust the chart height */}
-      <BarChart data={chartData} width={595} height={248} />
+      <div className="grow max-sm:max-h-[250px] xl:max-h-[350px]">
+        {/* Render the bar chart with multiple datasets */}
+        <Bar data={chartData} options={options} width={595} height={248} />
+      </div>
     </div>
   );
 }

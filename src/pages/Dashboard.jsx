@@ -322,14 +322,14 @@ function Dashboard() {
                     return (
                       <DashboardCard02
                         key={index}
-                        chartData={chart.chartData}
+                        fetchedChartData={chart.chartData}
                       />
                     );
                   } else if (chart.chartType === "LINE CHART MULTIPLE") {
                     return (
                       <DashboardCard03
                         key={index}
-                        chartData={chart.chartData}
+                        fetchedChartData={chart.chartData}
                       />
                     );
                   }

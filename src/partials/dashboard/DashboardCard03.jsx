@@ -1,56 +1,77 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import LineChart from '../../charts/LineChart01';
-import { chartAreaGradient } from '../../charts/ChartjsConfig';
+import { Line } from 'react-chartjs-2';
 import EditMenu from '../../components/DropdownEditMenu';
+import { tailwindConfig } from '../../utils/Utils';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-// Import utilities
-import { tailwindConfig, hexToRGB } from '../../utils/Utils';
+// Register the plugin
+import { Chart } from 'chart.js';
+Chart.register(ChartDataLabels);
 
-function DashboardCard03() {
+function DashboardCard04({ fetchedChartData }) {
+  // Check if fetchedChartData or its dataset is undefined or null
+  if (!fetchedChartData || !fetchedChartData.dataset) return null;
 
+  // Define a color palette
+  const colors = [
+    tailwindConfig().theme.colors.red[500],
+    tailwindConfig().theme.colors.green[500],
+    tailwindConfig().theme.colors.blue[500],
+    tailwindConfig().theme.colors.yellow[500],
+    tailwindConfig().theme.colors.purple[500],
+  ];
+
+  // Prepare the chart data
   const chartData = {
-    labels: [
-      '12-01-2022', '01-01-2023', '02-01-2023',
-      '03-01-2023', '04-01-2023', '05-01-2023',
-      '06-01-2023', '07-01-2023', '08-01-2023',
-      '09-01-2023', '10-01-2023', '11-01-2023',
-      '12-01-2023', '01-01-2024', '02-01-2024',
-      '03-01-2024', '04-01-2024', '05-01-2024',
-      '06-01-2024', '07-01-2024', '08-01-2024',
-      '09-01-2024', '10-01-2024', '11-01-2024',
-      '12-01-2024', '01-01-2025',
-    ],
-    datasets: [
-      // Indigo line
-      {
-        data: [
-          540, 466, 540, 466, 385, 432, 334,
-          334, 289, 289, 200, 289, 222, 289,
-          289, 403, 554, 304, 289, 270, 134,
-          270, 829, 344, 388, 364,
-        ],
-        fill: true,
-        backgroundColor: function(context) {
-          const chart = context.chart;
-          const {ctx, chartArea} = chart;
-          return chartAreaGradient(ctx, chartArea, [
-            { stop: 0, color: `rgba(${hexToRGB(tailwindConfig().theme.colors.sky[800])}, 0)` },
-            { stop: 1, color: `rgba(${hexToRGB(tailwindConfig().theme.colors.sky[800])}, 0.2)` }
-          ]);
-        },       
-        borderColor: tailwindConfig().theme.colors.sky[800],
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 3,
-        pointBackgroundColor: tailwindConfig().theme.colors.sky[800],
-        pointHoverBackgroundColor: tailwindConfig().theme.colors.sky[800],
-        pointBorderWidth: 0,
-        pointHoverBorderWidth: 0,          
-        clip: 20,
-        tension: 0.2,
+    labels: fetchedChartData.labels || [],
+    datasets: fetchedChartData.dataset.map((dataItem, index) => ({
+      label: dataItem.label || `Dataset ${index + 1}`,
+      data: dataItem.data || [],
+      borderColor: colors[index % colors.length], // Cycle through colors
+      backgroundColor: colors[index % colors.length],
+      fill: false,
+      tension: 0.4,
+    })),
+  };
+
+  // Chart options
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
       },
-    ],
+      title: {
+        display: true,
+        text: 'Multiple Line Chart Example',
+      },
+      datalabels: {
+        display: true,
+        color: 'white',
+        align: 'top',
+        
+        font: {
+          weight: 'bold',
+        },
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Month',
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Value',
+        },
+        beginAtZero: true,
+      },
+    },
   };
 
   return (
@@ -77,19 +98,13 @@ function DashboardCard03() {
             </li>
           </EditMenu>
         </header>
-        {/* <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Sales</div> */}
-        <div className="flex items-start">
-          {/* <div className="text-3xl font-bold text-gray-800 dark:text-gray-100 mr-2">$9,962</div> */}
-          {/* <div className="text-sm font-medium text-green-700 px-1.5 bg-green-500/20 rounded-full">+49%</div> */}
+        <div className="grow max-sm:max-h-[250px] xl:max-h-[250px]">
+          {/* Render the line chart with multiple lines */}
+          <Line data={chartData} options={options} width={389} height={250} />
         </div>
-      </div>
-      {/* Chart built with Chart.js 3 */}
-      <div className="grow max-sm:max-h-[250px] xl:max-h-[250px]">
-        {/* Change the height attribute to adjust the chart height */}
-        <LineChart data={chartData} width={389} height={250} />
       </div>
     </div>
   );
 }
 
-export default DashboardCard03;
+export default DashboardCard04;

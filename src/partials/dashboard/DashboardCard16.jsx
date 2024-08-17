@@ -6,7 +6,7 @@ import { tailwindConfig } from "../../utils/Utils";
 
 function DashboardCard06({ fetchedChartData }) {
   if (!fetchedChartData) return null;
-  // console.log({fetchedChartData});
+
   const chartData = {
     labels: fetchedChartData.labels,
     datasets: [
