@@ -304,28 +304,28 @@ function Dashboard() {
                 {generatedChartData.map((chart, index) => {
                   console.log(chart.chartType);
                   console.log(chart.chartData);
-                  if (chart.chartType === "BAR CHART") {
+                  if (chart.chartType === "BAR CHART" && chart.chartData) {
                     return (
                       <DashboardCard04
                         key={index}
                         fetchedChartData={chart.chartData}
                       />
                     );
-                  } else if (chart.chartType === "PIE CHART") {
+                  } else if (chart.chartType === "PIE CHART" && chart.chartData) {
                     return (
                       <DashboardCard16
                         key={index}
                         fetchedChartData={chart.chartData}
                       />
                     );
-                  } else if (chart.chartType === "LINE CHART SINGLE") {
+                  } else if (chart.chartType === "LINE CHART SINGLE" && chart.chartData) {
                     return (
                       <DashboardCard02
                         key={index}
                         fetchedChartData={chart.chartData}
                       />
                     );
-                  } else if (chart.chartType === "LINE CHART MULTIPLE") {
+                  } else if (chart.chartType === "LINE CHART MULTIPLE" && chart.chartData) {
                     return (
                       <DashboardCard03
                         key={index}
