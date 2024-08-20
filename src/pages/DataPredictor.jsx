@@ -1,9 +1,187 @@
 import React, { useState } from "react";
 import Papa from "papaparse";
+import {
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  FormControlLabel,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Container,
+} from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+
+const FileUploader = ({ onFileUpload }) => (
+  <Card className="file-uploader">
+    <CardContent>
+      <div className="border-[3px] border-gray-500 border-dashed p-2.5 rounded-[10px] mb-4">
+        <div className="relative flex flex-col text-gray-400 border-dashed rounded cursor-pointer">
+          <input
+            accept=".csv"
+            type="file"
+            className="absolute inset-0 z-50 w-full h-full p-0 m-0 outline-none opacity-0 cursor-pointer"
+            title=""
+            onChange={onFileUpload}
+          />
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <p className="m-0">Drag your CSV file here or click in this area.</p>
+          </div>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
+
+const TargetColumnSelector = ({ columns, targetColumn, setTargetColumn, error }) => (
+  <FormControl fullWidth margin="normal" error={!!error}>
+    <InputLabel>Target Column</InputLabel>
+    <Select
+      value={targetColumn}
+      onChange={(e) => setTargetColumn(e.target.value)}
+      label="Target Column"
+    >
+      {columns.map((col) => (
+        <MenuItem key={col} value={col}>
+          {col}
+        </MenuItem>
+      ))}
+    </Select>
+    {error && <Typography color="error">{error}</Typography>}
+  </FormControl>
+);
+
+const FeatureColumnSelector = ({ columns, featureColumns, setFeatureColumns, error }) => (
+  <FormControl fullWidth margin="normal" error={!!error}>
+    <InputLabel>Feature Columns</InputLabel>
+    <Select
+      multiple
+      value={featureColumns}
+      onChange={(e) => setFeatureColumns(e.target.value)}
+      label="Feature Columns"
+      renderValue={(selected) => (
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+          {selected.map((value) => (
+            <Chip key={value} label={value} />
+          ))}
+        </Box>
+      )}
+    >
+      {columns.map((col) => (
+        <MenuItem key={col} value={col}>
+          {col}
+        </MenuItem>
+      ))}
+    </Select>
+    {error && <Typography color="error">{error}</Typography>}
+  </FormControl>
+);
+
+const ModelSelector = ({ availableModels, selectedModel, setSelectedModel, error }) => (
+  <FormControl fullWidth margin="normal" error={!!error}>
+    <InputLabel>Model</InputLabel>
+    <Select
+      value={selectedModel}
+      onChange={(e) => setSelectedModel(e.target.value)}
+      label="Model"
+    >
+      {availableModels.map((model) => (
+        <MenuItem key={model} value={model}>
+          {model}
+        </MenuItem>
+      ))}
+    </Select>
+    {error && <Typography color="error">{error}</Typography>}
+  </FormControl>
+);
+
+const FeatureInput = ({
+  isTimeSeries,
+  featureColumns,
+  featureValues,
+  handleFeatureChange,
+  selectedDate,
+  setSelectedDate,
+  error,
+}) =>
+  !isTimeSeries ? (
+    <div>
+      <Typography variant="h6">Enter Feature Values:</Typography>
+      {featureColumns.map((col) => (
+        <TextField
+          key={col}
+          label={col}
+          value={featureValues[col] || ""}
+          onChange={(e) => handleFeatureChange(col, e.target.value)}
+          margin="normal"
+          fullWidth
+          error={!!error[col]}
+          helperText={error[col]}
+        />
+      ))}
+    </div>
+  ) : (
+    <div>
+      <Typography variant="h6">Select Date:</Typography>
+      <DatePicker
+        value={selectedDate}
+        onChange={(date) => setSelectedDate(date)}
+        renderInput={(props) => (
+          <TextField {...props} fullWidth error={!!error.date} helperText={error.date} />
+        )}
+      />
+    </div>
+  );
+
+const PredictionOutput = ({ predictionText, graphImage }) => (
+  <Card className="prediction-output">
+    <CardContent>
+      <Typography variant="h6">Prediction Result</Typography>
+      <Typography variant="body1" style={{ marginTop: "10px" }}>
+        {predictionText}
+      </Typography>
+      {graphImage && (
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <img src={graphImage} alt="Prediction Graph" style={{ maxWidth: "100%" }} />
+        </div>
+      )}
+    </CardContent>
+  </Card>
+);
+
+const SubmitButton = ({ onSubmit }) => (
+  <Button
+    variant="contained"
+    color="primary"
+    onClick={onSubmit}
+    style={{ marginTop: "20px" }}
+  >
+    Submit
+  </Button>
+);
 
 const DataPredictor = () => {
   const [fileInput1, setFileInput1] = useState("");
   const [columns, setColumns] = useState([]);
+  const [isTimeSeries, setIsTimeSeries] = useState(false);
+  const [targetColumn, setTargetColumn] = useState("");
+  const [featureColumns, setFeatureColumns] = useState([]);
+  const [selectedModel, setSelectedModel] = useState("");
+  const [featureValues, setFeatureValues] = useState({});
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [predictionText, setPredictionText] = useState("");
+  const [graphImage, setGraphImage] = useState("");
+
+  const [errors, setErrors] = useState({});
 
   const handleFileInput = (e) => {
     const file = e.target.files[0];
@@ -26,53 +204,133 @@ const DataPredictor = () => {
     }
   };
 
+  const handleFeatureChange = (column, value) => {
+    setFeatureValues({
+      ...featureValues,
+      [column]: value,
+    });
+  };
+
+  const validateForm = () => {
+    let valid = true;
+    let newErrors = {};
+
+    if (!targetColumn) {
+      newErrors.targetColumn = "Target column is required.";
+      valid = false;
+    }
+
+    if (!isTimeSeries && featureColumns.length === 0) {
+      newErrors.featureColumns = "At least one feature column is required.";
+      valid = false;
+    }
+
+    if (!selectedModel) {
+      newErrors.selectedModel = "Model selection is required.";
+      valid = false;
+    }
+
+    if (!isTimeSeries) {
+      const featureErrors = {};
+      featureColumns.forEach((col) => {
+        if (!featureValues[col]) {
+          featureErrors[col] = `${col} is required.`;
+          valid = false;
+        }
+      });
+      newErrors.featureValues = featureErrors;
+    } else if (!selectedDate) {
+      newErrors.date = "Date is required for time series predictions.";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  const availableModels = isTimeSeries
+    ? ["ARIMA", "LSTM", "Prophet"]
+    : ["Linear Regression", "Random Forest", "SVM"];
+
+  const handleSubmit = () => {
+    if (validateForm()) {
+      // Simulate a backend call with prediction result
+      const mockPrediction = "The predicted value is 42.";
+      const mockGraphImage = "https://via.placeholder.com/600x400.png?text=Prediction+Graph";
+      setPredictionText(mockPrediction);
+      setGraphImage(mockGraphImage);
+    }
+  };
+
   return (
-    <div>
-      {fileInput1 ? (
-        <>
-          <div>{fileInput1} uploaded successfully</div>
-          <div>
-            <h3>Columns in the CSV file:</h3>
-            <ul>
-              {columns.map((col, index) => (
-                <li key={index}>{col}</li>
-              ))}
-            </ul>
-          </div>
-        </>
-      ) : (
-        <div className="border-[3px] border-gray-500 border-dashed p-2.5 rounded-[10px]">
-          <div
-            className="relative flex flex-col text-gray-400 border-dashed rounded cursor-pointer"
-          >
-            <input
-              accept=".csv"
-              type="file"
-              className="absolute inset-0 z-50 w-full h-full p-0 m-0 outline-none opacity-0 cursor-pointer"
-              title=""
-              onChange={handleFileInput}
-            />
-            <div className="flex flex-col items-center justify-center py-10 text-center">
-              <svg
-                className="w-6 h-6 mr-1 text-current-50"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Container maxWidth="md">
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <FileUploader onFileUpload={handleFileInput} />
+          </Grid>
+          {columns.length > 0 && (
+            <>
+              <Grid item xs={12}>
+                <TargetColumnSelector
+                  columns={columns}
+                  targetColumn={targetColumn}
+                  setTargetColumn={setTargetColumn}
+                  error={errors.targetColumn}
                 />
-              </svg>
-              <p className="m-0">Drag your CSV file here or click in this area.</p>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={isTimeSeries}
+                      onChange={(e) => setIsTimeSeries(e.target.checked)}
+                    />
+                  }
+                  label="Is this a time series prediction?"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FeatureColumnSelector
+                  columns={columns}
+                  featureColumns={featureColumns}
+                  setFeatureColumns={setFeatureColumns}
+                  error={errors.featureColumns}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <ModelSelector
+                  availableModels={availableModels}
+                  selectedModel={selectedModel}
+                  setSelectedModel={setSelectedModel}
+                  error={errors.selectedModel}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FeatureInput
+                  isTimeSeries={isTimeSeries}
+                  featureColumns={featureColumns}
+                  featureValues={featureValues}
+                  handleFeatureChange={handleFeatureChange}
+                  selectedDate={selectedDate}
+                  setSelectedDate={setSelectedDate}
+                  error={{ ...errors.featureValues, date: errors.date }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <SubmitButton onSubmit={handleSubmit} />
+              </Grid>
+              <Grid item xs={12}>
+                <PredictionOutput
+                  predictionText={predictionText}
+                  graphImage={graphImage}
+                />
+              </Grid>
+            </>
+          )}
+        </Grid>
+      </Container>
+    </LocalizationProvider>
   );
 };
 

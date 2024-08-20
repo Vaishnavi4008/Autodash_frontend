@@ -11,6 +11,7 @@ import LoaderComponent from "./Loader";
 import { Route, Routes } from "react-router-dom";
 import DashboardCreator from "./DashboardCreator";
 import DataPredictor from "./DataPredictor";
+import DataChat from "./DataChat";
 
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -64,6 +65,7 @@ function Dashboard() {
             <Routes>
               <Route exact path="" element={<DashboardCreator pageNo={pageNo} />} />
               <Route path="prediction" element={<DataPredictor />} />
+              <Route path="chat" element={<DataChat />} />
             </Routes>
           </div>
         </main>

@@ -16,6 +16,10 @@ import DashboardCard14 from "../partials/dashboard/DashboardCard14";
 import DashboardCard15 from "../partials/dashboard/DashboardCard15";
 import DashboardCard16 from "../partials/dashboard/DashboardCard16";
 
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import LoaderComponent from "./Loader";
+
 const DashboardCreator = ({pageNo}) => {
   const [openCSVUploader, setOpenCSVUploader] = useState(false);
   const [prompt, setPrompt] = useState("");
@@ -195,12 +199,6 @@ const DashboardCreator = ({pageNo}) => {
     console.log(e.target.files[0]);
     setFileInput1(e.target.files[0].name);
   };
-
-  const handleFileInput2 = (e) => {
-    console.log(e.target.files[0]);
-    setFileInput2(e.target.files[0].name);
-  };
-
   const fetchChartData = async () => {
     const response = await fetch("http://localhost:5000/generate_charts", {
       method: "POST",
