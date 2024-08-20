@@ -1,74 +1,129 @@
-import React from 'react';
-import { Line } from 'react-chartjs-2';
+import React, { useRef, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
-// Register Chart.js modules
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+// Register Chart.js modules and the zoom plugin
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, zoomPlugin);
 
-// LineChartExample Component
 const LineChartExample = ({ chartData }) => {
-  const data = {
-    labels: chartData.labels,
-    datasets: [
-      {
-        label: 'Total Profit',
-        data: chartData.data,
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        fill: true,
-        tension: 0.4, // Makes the line curve
-      },
-    ],
-  };
+  const canvasRef = useRef(null);
+  const legendRef = useRef(null);
+  const chartInstanceRef = useRef(null);
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: chartData.chartTitle || 'Line Chart Example',
-      },
-      // Do not use datalabels plugin
-      datalabels: {
-        display: false,
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'Month',
+  useEffect(() => {
+    if (canvasRef.current) {
+      // Create chart instance
+      chartInstanceRef.current = new ChartJS(canvasRef.current, {
+        type: 'line',
+        data: {
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: 'Total Profit',
+              data: chartData.data,
+              borderColor: 'rgba(75, 192, 192, 1)',
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              fill: true,
+              tension: 0.4, // Makes the line curve
+            },
+          ],
         },
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Profit',
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false, // Disable default legend
+            },
+            title: {
+              display: true,
+              text: chartData.chartTitle || 'Line Chart Example',
+            },
+            zoom: {
+              pan: {
+                enabled: true,
+                mode: 'xy', // Allow panning in both directions
+              },
+              zoom: {
+                enabled: true,
+                mode: 'xy', // Allow zooming in both directions
+                drawTime: 'afterDatasetsDraw', // The time at which the zooming action is drawn
+              },
+            },
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Month',
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Profit',
+              },
+              beginAtZero: true,
+            },
+          },
         },
-        beginAtZero: true,
-      },
-    },
-  };
+      });
 
-  return <Line data={data} options={options} />;
+      // Generate custom legend
+      const ul = legendRef.current;
+      if (ul) {
+        ul.innerHTML = ''; // Clear previous legend items
+        chartInstanceRef.current.data.datasets.forEach((dataset, index) => {
+          const li = document.createElement('li');
+          li.style.display = 'flex';
+          li.style.alignItems = 'center';
+          li.style.marginRight = '10px';
+
+          const colorBox = document.createElement('span');
+          colorBox.style.backgroundColor = dataset.borderColor;
+          colorBox.style.width = '12px';
+          colorBox.style.height = '12px';
+          colorBox.style.display = 'inline-block';
+          colorBox.style.marginRight = '8px';
+
+          const text = document.createTextNode(dataset.label);
+
+          li.appendChild(colorBox);
+          li.appendChild(text);
+          ul.appendChild(li);
+        });
+      }
+    }
+
+    return () => {
+      // Cleanup on unmount
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+      }
+    };
+  }, [chartData]);
+
+  return (
+    <>
+      <div>
+        <canvas ref={canvasRef}></canvas>
+      </div>
+      <div className="px-5 pt-2 pb-6">
+        <ul ref={legendRef} className="flex flex-wrap justify-center -m-1"></ul>
+      </div>
+    </>
+  );
 };
 
-// DashboardCard02 Component
 function DashboardCard02({ fetchedChartData }) {
   if (!fetchedChartData) {
     console.error('No chart data available');
     return null;
   }
 
-  // Prepare the data for the LineChartExample component
   const chartData = {
     chartTitle: fetchedChartData.chartTitle,
     labels: fetchedChartData.labels,
-    data: fetchedChartData.dataset[0].data, // Assuming there's only one dataset
+    data: fetchedChartData.dataset[0].data,
   };
 
   return (
