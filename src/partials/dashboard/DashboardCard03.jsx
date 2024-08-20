@@ -7,9 +7,9 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 // Register the plugin
 import { Chart } from 'chart.js';
-Chart.register(ChartDataLabels);
+// Chart.register(ChartDataLabels);
 
-function DashboardCard04({ fetchedChartData }) {
+function DashboardCard03({ fetchedChartData }) {
   // Check if fetchedChartData or its dataset is undefined or null
   if (!fetchedChartData || !fetchedChartData.dataset) return null;
 
@@ -40,8 +40,8 @@ function DashboardCard04({ fetchedChartData }) {
     responsive: true,
     plugins: {
       legend: {
-        display: true,
-        position: 'top',
+        display: false,
+        position: 'bottom',
       },
       title: {
         display: true,
@@ -107,4 +107,4 @@ function DashboardCard04({ fetchedChartData }) {
   );
 }
 
-export default DashboardCard04;
+export default DashboardCard03;
