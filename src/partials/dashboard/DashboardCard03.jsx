@@ -4,10 +4,10 @@ import { Line } from 'react-chartjs-2';
 import EditMenu from '../../components/DropdownEditMenu';
 import { tailwindConfig } from '../../utils/Utils';
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+// import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 // Register Chart.js modules
-Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ChartDataLabels);
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 function DashboardCard03({ fetchedChartData }) {
   const canvasRef = useRef(null);

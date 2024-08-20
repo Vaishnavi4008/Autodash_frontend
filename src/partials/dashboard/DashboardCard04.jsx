@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import { tailwindConfig } from "../../utils/Utils";
+import zoomPlugin from 'chartjs-plugin-zoom';
 
 function DashboardCard04({ fetchedChartData }) {
   const legend = useRef(null);
@@ -31,7 +32,7 @@ function DashboardCard04({ fetchedChartData }) {
     })),
   };
 
-  // Chart options
+  // Chart options with zoom and pan configuration
   const options = {
     responsive: true,
     plugins: {
@@ -41,6 +42,21 @@ function DashboardCard04({ fetchedChartData }) {
       title: {
         display: true,
         text: 'Comparison of Different Stores',
+      },
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: 'x', // Allow panning on the x-axis
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+          },
+          pinch: {
+            enabled: true,
+          },
+          mode: 'x', // Allow zooming on the x-axis
+        },
       },
     },
     scales: {
@@ -64,7 +80,6 @@ function DashboardCard04({ fetchedChartData }) {
       },
     },
   };
-  
 
   useEffect(() => {
     const ul = legend.current;
@@ -116,9 +131,9 @@ function DashboardCard04({ fetchedChartData }) {
           Pune Store VS Outside Pune
         </h2>
       </header>
-      <div className="grow max-sm:max-h-[350px] xl:max-h-[450px]">
+      <div className="grow max-sm:max-h-[350px] xl:max-h-[650px]">
         {/* Render the bar chart */}
-        <Bar data={chartData} options={options} width={395} height={148} />
+        <Bar data={chartData} options={options} width={395} height={148} plugins={[zoomPlugin]} />
       </div>
       <div className="px-5 pt-2 pb-6">
         {/* Custom legend */}

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import DashboardCard01 from "../partials/dashboard/DashboardCard01";
 import DashboardCard02 from "../partials/dashboard/DashboardCard02";
 import DashboardCard03 from "../partials/dashboard/DashboardCard03";
@@ -23,157 +23,184 @@ const DashboardCreator = ({pageNo}) => {
   const [fileInput1, setFileInput1] = useState("");
   const [fileInput2, setFileInput2] = useState("");
   const [generatedChartData, setGeneratedChartData] = useState([
-    {
-      chartType: "BAR CHART",
-      chartData: {
-        labels: [
-          "Month 1",
-          "Month 2",
-          "Month 3",
-          "Month 4",
-          "Month 5",
-          "Month 6",
-          "Month 7",
-          "Month 8",
-          "Month 9",
-          "Month 10",
-          "Month 11",
-          "Month 12",
-        ],
-        dataset: [
-          {
-            barLabel: "Total Profit",
-            data: [
-              211000, 183300, 224700, 222700, 209600, 201400, 295500, 361400,
-              234000, 266700, 412800, 300200,
-            ],
-          },
-        ],
-        chartTitle: "Total Profit by Month",
-      },
-      code: "import pandas as pd\n\ndef read_csv_and_process(path):\n    # Read the CSV file\n    df = pd.read_csv(path)\n\n    # Extract the data for the \"total_profit\" column\n    data = df['total_profit'].tolist()\n\n    # Create the result dictionary\n    result = {\n        'labels': [f'Month {i+1}' for i in range(len(data))],\n        'dataset': [\n            {\n                'barLabel': 'Total Profit',\n                'data': data\n            }\n        ],\n        'chartTitle': 'Total Profit by Month'\n    }\n\n    return result\n\n# Call the function and store the result in the \"results\" variable\npath = \"F:/Mayur/vit/innov8ors/ollama/AutoDash/app/csv/test-new.csv\"  # Replace with your actual path\nresults = read_csv_and_process(path)",
-    },
-    {
-      chartType: "PIE CHART",
-      chartData: {
-        labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-        data: [
-          21100, 18330, 22470, 22270, 20960, 20140, 20760, 25180, 23400, 26670,
-          29540, 30020, 21100, 18330, 22470, 22270, 20960, 20140, 29550, 36140,
-          23400, 26670, 41280, 30020, 211000, 183300, 224700, 222700, 209600,
-          201400, 295500, 361400, 234000, 266700, 412800, 300200,
-        ],
-        chartTitle: "Total Sales and Units by Month",
-      },
-      code: 'import pandas as pd\nimport numpy as np\n\ndef process_data(csv_path):\n    # Read the CSV file\n    df = pd.read_csv(csv_path)\n\n    # Calculate the total sales for each month\n    total_sales = df[["facecream", "facewash", "toothpaste", "bathingsoap", "shampoo", "moisturizer"]].sum(axis=1)\n\n    # Calculate the total units for each month\n    total_units = df[["total_units"]].sum(axis=1)\n\n    # Calculate the total profit for each month\n    total_profit = df[["total_profit"]].sum(axis=1)\n\n    # Create the result dictionary\n    results = {\n        "labels": list(df["month_number"].astype(str)),\n        "data": total_sales.tolist() + total_units.tolist() + total_profit.tolist(),\n        "chartTitle": "Total Sales and Units by Month"\n    }\n\n    return results\n\n# Call the function\nresults = process_data("F:/Mayur/vit/innov8ors/ollama/AutoDash/app/csv/test-new.csv")\n\nprint(results)',
-    },
-    {
-      chartType: "LINE CHART SINGLE",
-      chartData: {
-        labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        dataset: [
-          {
-            "x-axis": "Month Number",
-            "y-axis": "Total Profit",
-            lineLabel: "Total Profit by Month",
-            data: [
-              211000, 183300, 224700, 222700, 209600, 201400, 295500, 361400,
-              234000, 266700, 412800, 300200,
-            ],
-          },
-        ],
-        chartTitle: "Total Profit by Month",
-      },
-      code: "import pandas as pd\nimport matplotlib.pyplot as plt\n\ndef read_csv_and_plot(path_to_csv_file):\n    # Read the CSV file\n    dfs = pd.read_csv(path_to_csv_file)\n    \n    # Extract data for a single line chart\n    data = dfs[['month_number', 'total_profit']].values.tolist()\n    \n    # Create the result dictionary\n    result = {\n        'labels': [x[0] for x in data],  # x-axis labels\n        'dataset': [\n            {\n                'x-axis': 'Month Number',\n                'y-axis': 'Total Profit',\n                'lineLabel': 'Total Profit by Month',\n                'data': [x[1] for x in data]  # y-axis values\n            }\n        ],\n        'chartTitle': 'Total Profit by Month'\n    }\n    \n    return result\n\n# Call the function and store the result in the \"results\" variable\nresults = read_csv_and_plot(\"F:/Mayur/vit/innov8ors/ollama/AutoDash/app/csv/test-new.csv\")",
-    },
-    {
-      chartType: "LINE CHART MULTIPLE",
-      chartData: {
-        labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        dataset: [
-          {
-            "x-axis": "",
-            "y-axis": "",
-            lineLabels: "",
-            data: [],
-          },
-          {
-            "x-axis": "Month Number",
-            "y-axis": "facecream",
-            lineLabels: "facecream",
-            data: [
-              2500, 2630, 2140, 3400, 3600, 2760, 2980, 3700, 3540, 1990, 2340,
-              2900,
-            ],
-          },
-          {
-            "x-axis": "Month Number",
-            "y-axis": "facewash",
-            lineLabels: "facewash",
-            data: [
-              1500, 1200, 1340, 1130, 1740, 1555, 1120, 1400, 1780, 1890, 2100,
-              1760,
-            ],
-          },
-          {
-            "x-axis": "Month Number",
-            "y-axis": "toothpaste",
-            lineLabels: "toothpaste",
-            data: [
-              5200, 5100, 4550, 5870, 4560, 4890, 4780, 5860, 6100, 8300, 7300,
-              7400,
-            ],
-          },
-          {
-            "x-axis": "Month Number",
-            "y-axis": "bathingsoap",
-            lineLabels: "bathingsoap",
-            data: [
-              9200, 6100, 9550, 8870, 7760, 7490, 8980, 9960, 8100, 10300,
-              13300, 14400,
-            ],
-          },
-          {
-            "x-axis": "Month Number",
-            "y-axis": "shampoo",
-            lineLabels: "shampoo",
-            data: [
-              1200, 2100, 3550, 1870, 1560, 1890, 1780, 2860, 2100, 2300, 2400,
-              1800,
-            ],
-          },
-          {
-            "x-axis": "Month Number",
-            "y-axis": "moisturizer",
-            lineLabels: "moisturizer",
-            data: [
-              1500, 1200, 1340, 1130, 1740, 1555, 1120, 1400, 1780, 1890, 2100,
-              1760,
-            ],
-          },
-          {
-            "x-axis": "Month Number",
-            "y-axis": "total_units",
-            lineLabels: "total_units",
-            data: [
-              21100, 18330, 22470, 22270, 20960, 20140, 29550, 36140, 23400,
-              26670, 41280, 30020,
-            ],
-          },
-          {
-            "x-axis": "Month Number",
-            "y-axis": "total_profit",
-            lineLabels: "total_profit",
-            data: [
-              211000, 183300, 224700, 222700, 209600, 201400, 295500, 361400,
-              234000, 266700, 412800, 300200,
-            ],
-          },
-        ],
-        chartTitle: "Total Units and Total Profit by Month",
-      },
-      code: "import pandas as pd\nimport matplotlib.pyplot as plt\n\ndef read_csv_and_create_chart(csv_path):\n    # Read the CSV file\n    df = pd.read_csv(csv_path)\n\n    # Extract the columns of interest\n    cols_of_interest = ['month_number', 'facecream', 'facewash', 'toothpaste', 'bathingsoap', 'shampoo', 'moisturizer', 'total_units', 'total_profit']\n\n    # Create the dataset structure\n    results = {\n        'labels': [],\n        'dataset': [{'x-axis': '', 'y-axis': '', 'lineLabels': '', 'data': []}],\n        'chartTitle': ''\n    }\n\n    # Create the x-axis labels\n    results['labels'] = df['month_number'].tolist()\n\n    # Create the multiple line chart\n    for col in cols_of_interest[1:]:  # Iterate over the columns starting from the second one\n        results['dataset'].append({\n            'x-axis': 'Month Number',\n            'y-axis': col,\n            'lineLabels': col,\n            'data': df[col].tolist()\n        })\n\n    # Set the chart title\n    results['chartTitle'] = 'Total Units and Total Profit by Month'\n\n    return results\n\n# Call the function\nresults = read_csv_and_create_chart('F:/Mayur/vit/innov8ors/ollama/AutoDash/app/csv/test-new.csv')",
-    },
+    // {
+    //   chartType: "BAR CHART",
+    //   chartData: {
+    //     labels: [
+    //       "Month 1",
+    //       "Month 2",
+    //       "Month 3",
+    //       "Month 4",
+    //       "Month 5",
+    //       "Month 6",
+    //       "Month 7",
+    //       "Month 8",
+    //       "Month 9",
+    //       "Month 10",
+    //       "Month 11",
+    //       "Month 12",
+    //     ],
+    //     dataset: [
+    //       {
+    //         barLabel: "Total Profit",
+    //         data: [
+    //           211000, 183300, 224700, 222700, 209600, 201400, 295500, 361400,
+    //           234000, 266700, 412800, 300200,
+    //         ],
+    //       },
+    //     ],
+    //     chartTitle: "Total Profit by Month",
+    //   },
+    //   code: "import pandas as pd\n\ndef read_csv_and_process(path):\n    # Read the CSV file\n    df = pd.read_csv(path)\n\n    # Extract the data for the \"total_profit\" column\n    data = df['total_profit'].tolist()\n\n    # Create the result dictionary\n    result = {\n        'labels': [f'Month {i+1}' for i in range(len(data))],\n        'dataset': [\n            {\n                'barLabel': 'Total Profit',\n                'data': data\n            }\n        ],\n        'chartTitle': 'Total Profit by Month'\n    }\n\n    return result\n\n# Call the function and store the result in the \"results\" variable\npath = \"F:/Mayur/vit/innov8ors/ollama/AutoDash/app/csv/test-new.csv\"  # Replace with your actual path\nresults = read_csv_and_process(path)",
+    // },
+    // {
+    //   chartType: "PIE CHART",
+    //   chartData: {
+    //     labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+    //     data: [
+    //       21100, 18330, 22470, 22270, 20960, 20140, 20760, 25180, 23400, 26670,
+    //       29540, 30020, 21100, 18330, 22470, 22270, 20960, 20140, 29550, 36140,
+    //       23400, 26670, 41280, 30020, 211000, 183300, 224700, 222700, 209600,
+    //       201400, 295500, 361400, 234000, 266700, 412800, 300200,
+    //     ],
+    //     chartTitle: "Total Sales and Units by Month",
+    //   },
+    //   code: 'import pandas as pd\nimport numpy as np\n\ndef process_data(csv_path):\n    # Read the CSV file\n    df = pd.read_csv(csv_path)\n\n    # Calculate the total sales for each month\n    total_sales = df[["facecream", "facewash", "toothpaste", "bathingsoap", "shampoo", "moisturizer"]].sum(axis=1)\n\n    # Calculate the total units for each month\n    total_units = df[["total_units"]].sum(axis=1)\n\n    # Calculate the total profit for each month\n    total_profit = df[["total_profit"]].sum(axis=1)\n\n    # Create the result dictionary\n    results = {\n        "labels": list(df["month_number"].astype(str)),\n        "data": total_sales.tolist() + total_units.tolist() + total_profit.tolist(),\n        "chartTitle": "Total Sales and Units by Month"\n    }\n\n    return results\n\n# Call the function\nresults = process_data("F:/Mayur/vit/innov8ors/ollama/AutoDash/app/csv/test-new.csv")\n\nprint(results)',
+    // },
+    // {
+    //   chartType: "LINE CHART SINGLE",
+    //   chartData: {
+    //     labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    //     dataset: [
+    //       {
+    //         "x-axis": "Month Number",
+    //         "y-axis": "Total Profit",
+    //         lineLabel: "Total Profit by Month",
+    //         data: [
+    //           211000, 183300, 224700, 222700, 209600, 201400, 295500, 361400,
+    //           234000, 266700, 412800, 300200,
+    //         ],
+    //       },
+    //     ],
+    //     chartTitle: "Total Profit by Month",
+    //   },
+    //   code: "import pandas as pd\nimport matplotlib.pyplot as plt\n\ndef read_csv_and_plot(path_to_csv_file):\n    # Read the CSV file\n    dfs = pd.read_csv(path_to_csv_file)\n    \n    # Extract data for a single line chart\n    data = dfs[['month_number', 'total_profit']].values.tolist()\n    \n    # Create the result dictionary\n    result = {\n        'labels': [x[0] for x in data],  # x-axis labels\n        'dataset': [\n            {\n                'x-axis': 'Month Number',\n                'y-axis': 'Total Profit',\n                'lineLabel': 'Total Profit by Month',\n                'data': [x[1] for x in data]  # y-axis values\n            }\n        ],\n        'chartTitle': 'Total Profit by Month'\n    }\n    \n    return result\n\n# Call the function and store the result in the \"results\" variable\nresults = read_csv_and_plot(\"F:/Mayur/vit/innov8ors/ollama/AutoDash/app/csv/test-new.csv\")",
+    // },
+    // {
+    //   chartType: "LINE CHART MULTIPLE",
+    //   chartData: {
+    //     labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    //     dataset: [
+    //       {
+    //         "x-axis": "",
+    //         "y-axis": "",
+    //         lineLabels: "",
+    //         data: [],
+    //       },
+    //       {
+    //         "x-axis": "Month Number",
+    //         "y-axis": "facecream",
+    //         lineLabels: "facecream",
+    //         data: [
+    //           2500, 2630, 2140, 3400, 3600, 2760, 2980, 3700, 3540, 1990, 2340,
+    //           2900,
+    //         ],
+    //       },
+    //       {
+    //         "x-axis": "Month Number",
+    //         "y-axis": "facewash",
+    //         lineLabels: "facewash",
+    //         data: [
+    //           1500, 1200, 1340, 1130, 1740, 1555, 1120, 1400, 1780, 1890, 2100,
+    //           1760,
+    //         ],
+    //       },
+    //       {
+    //         "x-axis": "Month Number",
+    //         "y-axis": "toothpaste",
+    //         lineLabels: "toothpaste",
+    //         data: [
+    //           5200, 5100, 4550, 5870, 4560, 4890, 4780, 5860, 6100, 8300, 7300,
+    //           7400,
+    //         ],
+    //       },
+    //       {
+    //         "x-axis": "Month Number",
+    //         "y-axis": "bathingsoap",
+    //         lineLabels: "bathingsoap",
+    //         data: [
+    //           9200, 6100, 9550, 8870, 7760, 7490, 8980, 9960, 8100, 10300,
+    //           13300, 14400,
+    //         ],
+    //       },
+    //       {
+    //         "x-axis": "Month Number",
+    //         "y-axis": "shampoo",
+    //         lineLabels: "shampoo",
+    //         data: [
+    //           1200, 2100, 3550, 1870, 1560, 1890, 1780, 2860, 2100, 2300, 2400,
+    //           1800,
+    //         ],
+    //       },
+    //       {
+    //         "x-axis": "Month Number",
+    //         "y-axis": "moisturizer",
+    //         lineLabels: "moisturizer",
+    //         data: [
+    //           1500, 1200, 1340, 1130, 1740, 1555, 1120, 1400, 1780, 1890, 2100,
+    //           1760,
+    //         ],
+    //       },
+    //       {
+    //         "x-axis": "Month Number",
+    //         "y-axis": "total_units",
+    //         lineLabels: "total_units",
+    //         data: [
+    //           21100, 18330, 22470, 22270, 20960, 20140, 29550, 36140, 23400,
+    //           26670, 41280, 30020,
+    //         ],
+    //       },
+    //       {
+    //         "x-axis": "Month Number",
+    //         "y-axis": "total_profit",
+    //         lineLabels: "total_profit",
+    //         data: [
+    //           211000, 183300, 224700, 222700, 209600, 201400, 295500, 361400,
+    //           234000, 266700, 412800, 300200,
+    //         ],
+    //       },
+    //     ],
+    //     chartTitle: "Total Units and Total Profit by Month",
+    //   },
+    //   code: "import pandas as pd\nimport matplotlib.pyplot as plt\n\ndef read_csv_and_create_chart(csv_path):\n    # Read the CSV file\n    df = pd.read_csv(csv_path)\n\n    # Extract the columns of interest\n    cols_of_interest = ['month_number', 'facecream', 'facewash', 'toothpaste', 'bathingsoap', 'shampoo', 'moisturizer', 'total_units', 'total_profit']\n\n    # Create the dataset structure\n    results = {\n        'labels': [],\n        'dataset': [{'x-axis': '', 'y-axis': '', 'lineLabels': '', 'data': []}],\n        'chartTitle': ''\n    }\n\n    # Create the x-axis labels\n    results['labels'] = df['month_number'].tolist()\n\n    # Create the multiple line chart\n    for col in cols_of_interest[1:]:  # Iterate over the columns starting from the second one\n        results['dataset'].append({\n            'x-axis': 'Month Number',\n            'y-axis': col,\n            'lineLabels': col,\n            'data': df[col].tolist()\n        })\n\n    # Set the chart title\n    results['chartTitle'] = 'Total Units and Total Profit by Month'\n\n    return results\n\n# Call the function\nresults = read_csv_and_create_chart('F:/Mayur/vit/innov8ors/ollama/AutoDash/app/csv/test-new.csv')",
+    // },
+    // {
+    //   "chartType": "SCATTER PLOT",
+    //   "chartData": {
+    //     "dataset": [
+    //       {
+    //         "x-axis": "Feature A",
+    //         "y-axis": "Feature B",
+    //         "label": "Scatter Plot Example",
+    //         "data": [
+    //           { "x": 10, "y": 20 },
+    //           { "x": 15, "y": 25 },
+    //           { "x": 20, "y": 30 },
+    //           { "x": 25, "y": 35 },
+    //           { "x": 30, "y": 40 },
+    //           { "x": 35, "y": 45 },
+    //           { "x": 40, "y": 50 },
+    //           { "x": 45, "y": 55 },
+    //           { "x": 50, "y": 60 },
+    //           { "x": 55, "y": 65 }
+    //         ]
+    //       }
+    //     ],
+    //     "chartTitle": "Scatter Plot Example"
+    //   },
+    //   "code": "import pandas as pd\nimport matplotlib.pyplot as plt\n\ndef read_csv_and_plot(path_to_csv_file):\n    # Read the CSV file\n    dfs = pd.read_csv(path_to_csv_file)\n    \n    # Extract data for scatter plot\n    data = dfs[['feature_a', 'feature_b']].values.tolist()\n    \n    # Create the result dictionary\n    result = {\n        'dataset': [\n            {\n                'x-axis': 'Feature A',\n                'y-axis': 'Feature B',\n                'label': 'Scatter Plot Example',\n                'data': [{'x': x[0], 'y': x[1]} for x in data]\n            }\n        ],\n        'chartTitle': 'Scatter Plot Example'\n    }\n    \n    return result\n\n# Call the function and store the result in the \"results\" variable\nresults = read_csv_and_plot(\"F:/Mayur/vit/innov8ors/ollama/AutoDash/app/csv/test-new.csv\")"
+    // },
+    
   ]);
   const [isDataFetched, setIsDataFetched] = useState(true);
 
@@ -215,9 +242,9 @@ const DashboardCreator = ({pageNo}) => {
     return data;
   };
 
-  // useEffect(() => {
-  //   fetchChartData();
-  // }, []);
+  useEffect(() => {
+    fetchChartData();
+  }, []);
 
   return (
     <>
@@ -427,6 +454,17 @@ const DashboardCreator = ({pageNo}) => {
             ) {
               return (
                 <DashboardCard03
+                  key={index}
+                  fetchedChartData={chart.chartData}
+                />
+              );
+            }
+            else if (
+              chart.chartType === "SCATTER PLOT" &&
+              chart.chartData
+            ) {
+              return (
+                <DashboardCard14
                   key={index}
                   fetchedChartData={chart.chartData}
                 />

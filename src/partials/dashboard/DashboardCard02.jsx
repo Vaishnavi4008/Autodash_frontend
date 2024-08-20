@@ -1,10 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
-// Register Chart.js modules
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+// Register Chart.js modules and the zoom plugin
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, zoomPlugin);
 
-// LineChartExample Component
 const LineChartExample = ({ chartData }) => {
   const canvasRef = useRef(null);
   const legendRef = useRef(null);
@@ -37,6 +37,17 @@ const LineChartExample = ({ chartData }) => {
             title: {
               display: true,
               text: chartData.chartTitle || 'Line Chart Example',
+            },
+            zoom: {
+              pan: {
+                enabled: true,
+                mode: 'xy', // Allow panning in both directions
+              },
+              zoom: {
+                enabled: true,
+                mode: 'xy', // Allow zooming in both directions
+                drawTime: 'afterDatasetsDraw', // The time at which the zooming action is drawn
+              },
             },
           },
           scales: {
@@ -103,18 +114,16 @@ const LineChartExample = ({ chartData }) => {
   );
 };
 
-// DashboardCard02 Component
 function DashboardCard02({ fetchedChartData }) {
   if (!fetchedChartData) {
     console.error('No chart data available');
     return null;
   }
 
-  // Prepare the data for the LineChartExample component
   const chartData = {
     chartTitle: fetchedChartData.chartTitle,
     labels: fetchedChartData.labels,
-    data: fetchedChartData.dataset[0].data, // Assuming there's only one dataset
+    data: fetchedChartData.dataset[0].data,
   };
 
   return (
