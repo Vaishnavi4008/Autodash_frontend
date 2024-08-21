@@ -100,7 +100,7 @@ const DataChat = () => {
             "http://localhost/" + output.latest_image_url.split("html")[1];
           setPromptResult(
             <img
-              src={`data:image/png;base64,${output.latest_image_url}`}
+              src={newURL}
               alt="plot"
               style={{ width: "100%", height: "100%" }}
             />
