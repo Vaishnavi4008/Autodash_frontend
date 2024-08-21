@@ -18,15 +18,17 @@ import DashboardCard13 from "../partials/dashboard/DashboardCard13";
 import DashboardCard14 from "../partials/dashboard/DashboardCard14";
 import DashboardCard15 from "../partials/dashboard/DashboardCard15";
 import DashboardCard16 from "../partials/dashboard/DashboardCard16";
+import axios from "axios";
 
 const DataChat = () => {
   const [fileInput2, setFileInput2] = useState("");
   const [isDataFetched, setIsDataFetched] = useState(true);
   const [promptResult, setPromptResult] = useState(<></>);
+  const [prompt, setPrompt] = useState("");
 
   const handleFileInput2 = (e) => {
     console.log(e.target.files[0]);
-    setFileInput2(e.target.files[0].name);
+    setFileInput2(e.target.files[0]);
   };
 
   const promptMap = {
@@ -43,6 +45,55 @@ const DataChat = () => {
     "What is the average sales for the month of March?": <DashboardCard14 />,
   };
 
+  console.log(fileInput2);
+  console.log(Boolean(fileInput2));
+
+  const handleSubmit = () => {
+    setIsDataFetched(false);
+    // formdata
+    const formData = new FormData();
+    fileInput2 && formData.append("code", fileInput2);
+    formData.append("prompt", prompt);
+    axios
+      .post("http://localhost:5000/chat", formData, {
+        headers: {
+          "Content-Type": fileInput2
+            ? "multipart/form-data"
+            : "application/json",
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        const output = res.data || {};
+        console.log({output});
+        
+
+        if (output.response_type === "Plot") {
+          setPromptResult(
+            <img
+              src={`data:image/png;base64,${output.latest_image_url}`}
+              alt="plot"
+              style={{ width: "100%", height: "100%" }}
+            />
+          );
+        } else if (
+          output.response_type === "Number" ||
+          output.response_type === "String" ||
+          output.response_type === "DataFrame"
+        ) {
+          setPromptResult(<p>{output.response}</p>);
+        }
+        setIsDataFetched(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsDataFetched(true);
+      });
+  };
+
+  console.log({promptResult});
+  
+
   return (
     <div className="flex flex-col items-center h-screen">
       <div
@@ -57,7 +108,7 @@ const DataChat = () => {
               className="relative flex flex-col p-4 text-gray-400 border border-gray-200 rounded"
             >
               {fileInput2 ? (
-                <>{fileInput2} Uploaded successfully</>
+                <>{fileInput2?.name} Uploaded successfully</>
               ) : (
                 <div
                   x-ref="dnd"
@@ -107,13 +158,7 @@ const DataChat = () => {
           <button
             className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
             style={{ marginTop: "20px" }}
-            onClick={() => {
-              setPromptResult(<CircularProgress />);
-
-              setTimeout(() => {
-                setPromptResult(promptMap[prompt]);
-              }, 5000);
-            }}
+            onClick={handleSubmit}
           >
             {" "}
             Submit{" "}

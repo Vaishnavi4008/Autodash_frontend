@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
 import {
   TextField,
@@ -20,6 +20,30 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import axios from "axios";
+
+// list of model routes
+// /ml/linear_regression, /ml/polynomial_regression, /ml/random_forest, /ml/decision_tree, /ml/xg_boost, /ml/cat_boost, /ml/lstmm, /ml/ex, /ml/arima,
+
+const modelRouteMapping = [
+  {
+    model: "Linear Regression",
+    route: "/ml/linear_regression",
+    time_series: false,
+  },
+  {
+    model: "Polynomial Regression",
+    route: "/ml/polynomial_regression",
+    time_series: false,
+  },
+  { model: "Random Forest", route: "/ml/random_forest", time_series: false },
+  { model: "Decision Tree", route: "/ml/decision_tree", time_series: false },
+  { model: "XG Boost", route: "/ml/xg_boost", time_series: false },
+  { model: "Cat Boost", route: "/ml/cat_boost", time_series: false },
+  { model: "LSTM", route: "/ml/lstm", time_series: true },
+  { model: "Exponential Smoothing", route: "/ml/ex", time_series: true },
+  { model: "ARIMA", route: "/ml/arima", time_series: true },
+];
 
 const FileUploader = ({ onFileUpload }) => (
   <Card className="file-uploader">
@@ -34,7 +58,9 @@ const FileUploader = ({ onFileUpload }) => (
             onChange={onFileUpload}
           />
           <div className="flex flex-col items-center justify-center py-10 text-center">
-            <p className="m-0">Drag your CSV file here or click in this area.</p>
+            <p className="m-0">
+              Drag your CSV file here or click in this area.
+            </p>
           </div>
         </div>
       </div>
@@ -42,7 +68,12 @@ const FileUploader = ({ onFileUpload }) => (
   </Card>
 );
 
-const TargetColumnSelector = ({ columns, targetColumn, setTargetColumn, error }) => (
+const TargetColumnSelector = ({
+  columns,
+  targetColumn,
+  setTargetColumn,
+  error,
+}) => (
   <FormControl fullWidth margin="normal" error={!!error}>
     <InputLabel>Target Column</InputLabel>
     <Select
@@ -60,7 +91,12 @@ const TargetColumnSelector = ({ columns, targetColumn, setTargetColumn, error })
   </FormControl>
 );
 
-const FeatureColumnSelector = ({ columns, featureColumns, setFeatureColumns, error }) => (
+const FeatureColumnSelector = ({
+  columns,
+  featureColumns,
+  setFeatureColumns,
+  error,
+}) => (
   <FormControl fullWidth margin="normal" error={!!error}>
     <InputLabel>Feature Columns</InputLabel>
     <Select
@@ -86,7 +122,12 @@ const FeatureColumnSelector = ({ columns, featureColumns, setFeatureColumns, err
   </FormControl>
 );
 
-const ModelSelector = ({ availableModels, selectedModel, setSelectedModel, error }) => (
+const ModelSelector = ({
+  availableModels,
+  selectedModel,
+  setSelectedModel,
+  error,
+}) => (
   <FormControl fullWidth margin="normal" error={!!error}>
     <InputLabel>Model</InputLabel>
     <Select
@@ -95,8 +136,8 @@ const ModelSelector = ({ availableModels, selectedModel, setSelectedModel, error
       label="Model"
     >
       {availableModels.map((model) => (
-        <MenuItem key={model} value={model}>
-          {model}
+        <MenuItem key={model.model} value={model.model}>
+          {model.model}
         </MenuItem>
       ))}
     </Select>
@@ -136,7 +177,12 @@ const FeatureInput = ({
         value={selectedDate}
         onChange={(date) => setSelectedDate(date)}
         renderInput={(props) => (
-          <TextField {...props} fullWidth error={!!error.date} helperText={error.date} />
+          <TextField
+            {...props}
+            fullWidth
+            error={!!error.date}
+            helperText={error.date}
+          />
         )}
       />
     </div>
@@ -151,7 +197,11 @@ const PredictionOutput = ({ predictionText, graphImage }) => (
       </Typography>
       {graphImage && (
         <div style={{ marginTop: "20px", textAlign: "center" }}>
-          <img src={graphImage} alt="Prediction Graph" style={{ maxWidth: "100%" }} />
+          <img
+            src={graphImage}
+            alt="Prediction Graph"
+            style={{ maxWidth: "100%" }}
+          />
         </div>
       )}
     </CardContent>
@@ -248,19 +298,53 @@ const DataPredictor = () => {
     return valid;
   };
 
-  const availableModels = isTimeSeries
-    ? ["ARIMA", "LSTM", "Prophet"]
-    : ["Linear Regression", "Random Forest", "SVM"];
+  const [availableModels, setAvailableModels] = useState([]);
+
+  useEffect(() => {
+    setAvailableModels(
+      isTimeSeries
+        ? modelRouteMapping
+            .filter((model) => model.time_series)
+            .map((model) => model) // ["LSTM", "Exponential Smoothing", "ARIMA"]
+        : modelRouteMapping
+            .filter((model) => !model.time_series)
+            .map((model) => model) // ["Linear Regression", "Random Forest", "SVM"];
+    );
+  }, [isTimeSeries]);
 
   const handleSubmit = () => {
     if (validateForm()) {
       // Simulate a backend call with prediction result
-      const mockPrediction = "The predicted value is 42.";
-      const mockGraphImage = "https://via.placeholder.com/600x400.png?text=Prediction+Graph";
-      setPredictionText(mockPrediction);
-      setGraphImage(mockGraphImage);
+      const featureClomunsValues = featureColumns.join(", ");
+      const formData = new FormData();
+      formData.append("file", fileInput1);
+      formData.append("target_col", targetColumn);
+      formData.append("feature_col", featureClomunsValues);
+      formData.append("user_input", JSON.stringify(featureValues));
+      formData.append("date_column", selectedDate);
+
+      axios
+        .post(
+          `https://localhost:5000${
+            modelRouteMapping.find((model) => model.model === selectedModel)
+              .route
+          }`,
+          formData
+        )
+        .then((response) => {
+          setPredictionText(response.data.forecast);
+          setGraphImage(response.data.url);
+        });
+
+      // const mockPrediction = "The predicted value is 42.";
+      // const mockGraphImage =
+      //   "https://via.placeholder.com/600x400.png?text=Prediction+Graph";
+      // setPredictionText(mockPrediction);
+      // setGraphImage(mockGraphImage);
     }
   };
+
+  console.log({ predictionText, graphImage });
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
