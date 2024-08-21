@@ -251,27 +251,32 @@ const DataPredictor = () => {
 
     if (!targetColumn) {
       newErrors.targetColumn = "Target column is required.";
+      console.log("Target column is required.");
+      
       valid = false;
     }
 
     if (!isTimeSeries && !featureColumn) {
       newErrors.featureColumn = "Feature column is required.";
+      console.log("Feature column is required.");
+      
       valid = false;
     }
 
     if (!selectedModel) {
       newErrors.selectedModel = "Model selection is required.";
+      console.log("Model selection is required.");
+      
       valid = false;
     }
 
     if (!isTimeSeries) {
       if (!featureValue) {
         newErrors.featureValue = "Feature value is required.";
+        console.log("Feature value is required.");
+        
         valid = false;
       }
-    } else if (!selectedDate) {
-      newErrors.date = "Date is required for time series predictions.";
-      valid = false;
     }
 
     setErrors(newErrors);
@@ -359,6 +364,9 @@ const DataPredictor = () => {
               }
             });
         });
+    } else {
+      console.log("Form validation failed.");
+      
     }
   };
 
