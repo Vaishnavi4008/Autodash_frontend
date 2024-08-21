@@ -34,7 +34,6 @@ const DataChat = () => {
     where: ""
   });
   const [formVisible, setFormVisible] = useState("");
-  const [prompt, setPrompt] = useState("");
 
   const handleFileInput2 = (e) => {
     console.log(e.target.files[0]);
