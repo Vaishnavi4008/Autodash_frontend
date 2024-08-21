@@ -110,27 +110,18 @@ const DateColumnSelector = ({ columns, dateColumn, setDateColumn, error }) => (
     {error && <Typography color="error">{error}</Typography>}
   </FormControl>
 );
-
 const FeatureColumnSelector = ({
   columns,
-  featureColumns,
-  setFeatureColumns,
+  featureColumn,
+  setFeatureColumn,
   error,
 }) => (
   <FormControl fullWidth margin="normal" error={!!error}>
-    <InputLabel>Feature Columns</InputLabel>
+    <InputLabel>Feature Column</InputLabel>
     <Select
-      multiple
-      value={featureColumns}
-      onChange={(e) => setFeatureColumns(e.target.value)}
-      label="Feature Columns"
-      renderValue={(selected) => (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-          {selected.map((value) => (
-            <Chip key={value} label={value} />
-          ))}
-        </Box>
-      )}
+      value={featureColumn}
+      onChange={(e) => setFeatureColumn(e.target.value)}
+      label="Feature Column"
     >
       {columns.map((col) => (
         <MenuItem key={col} value={col}>
@@ -164,49 +155,25 @@ const ModelSelector = ({
     {error && <Typography color="error">{error}</Typography>}
   </FormControl>
 );
-
 const FeatureInput = ({
-  isTimeSeries,
-  featureColumns,
-  featureValues,
+  featureColumn,
+  featureValue,
   handleFeatureChange,
-  selectedDate,
-  setSelectedDate,
   error,
-}) =>
-  !isTimeSeries ? (
-    <div>
-      <Typography variant="h6">Enter Feature Values:</Typography>
-      {featureColumns.map((col) => (
-        <TextField
-          key={col}
-          label={col}
-          value={featureValues[col] || ""}
-          onChange={(e) => handleFeatureChange(col, e.target.value)}
-          margin="normal"
-          fullWidth
-          error={!!error[col]}
-          helperText={error[col]}
-        />
-      ))}
-    </div>
-  ) : (
-    <div>
-      <Typography variant="h6">Select Date:</Typography>
-      <DatePicker
-        value={selectedDate}
-        onChange={(date) => setSelectedDate(date)}
-        renderInput={(props) => (
-          <TextField
-            {...props}
-            fullWidth
-            error={!!error.date}
-            helperText={error.date}
-          />
-        )}
-      />
-    </div>
-  );
+}) => (
+  <div>
+    <Typography variant="h6">Enter Feature Value:</Typography>
+    <TextField
+      label={featureColumn}
+      value={featureValue || ""}
+      onChange={(e) => handleFeatureChange(e.target.value)}
+      margin="normal"
+      fullWidth
+      error={!!error}
+      helperText={error}
+    />
+  </div>
+);
 
 const PredictionOutput = ({ predictionText, graphImage }) => (
   <Card className="prediction-output">
@@ -238,22 +205,22 @@ const SubmitButton = ({ onSubmit }) => (
     Submit
   </Button>
 );
-
 const DataPredictor = () => {
+  // State variables
   const [fileInput1, setFileInput1] = useState("");
   const [columns, setColumns] = useState([]);
   const [isTimeSeries, setIsTimeSeries] = useState(false);
   const [targetColumn, setTargetColumn] = useState("");
-  const [featureColumns, setFeatureColumns] = useState([]);
+  const [featureColumn, setFeatureColumn] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
-  const [featureValues, setFeatureValues] = useState({});
+  const [featureValue, setFeatureValue] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [predictionText, setPredictionText] = useState("");
   const [graphImage, setGraphImage] = useState("");
   const [dateColumn, setDateColumn] = useState("");
-
   const [errors, setErrors] = useState({});
 
+  // Handlers
   const handleFileInput = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -264,7 +231,6 @@ const DataPredictor = () => {
         header: true,
         dynamicTyping: true,
         complete: (results) => {
-          // Get the column names
           const colNames = results.meta.fields;
           setColumns(colNames);
         },
@@ -275,11 +241,8 @@ const DataPredictor = () => {
     }
   };
 
-  const handleFeatureChange = (column, value) => {
-    setFeatureValues({
-      ...featureValues,
-      [column]: value,
-    });
+  const handleFeatureChange = (value) => {
+    setFeatureValue(value);
   };
 
   const validateForm = () => {
@@ -291,8 +254,8 @@ const DataPredictor = () => {
       valid = false;
     }
 
-    if (!isTimeSeries && featureColumns.length === 0) {
-      newErrors.featureColumns = "At least one feature column is required.";
+    if (!isTimeSeries && !featureColumn) {
+      newErrors.featureColumn = "Feature column is required.";
       valid = false;
     }
 
@@ -302,14 +265,10 @@ const DataPredictor = () => {
     }
 
     if (!isTimeSeries) {
-      const featureErrors = {};
-      featureColumns.forEach((col) => {
-        if (!featureValues[col]) {
-          featureErrors[col] = `${col} is required.`;
-          valid = false;
-        }
-      });
-      newErrors.featureValues = featureErrors;
+      if (!featureValue) {
+        newErrors.featureValue = "Feature value is required.";
+        valid = false;
+      }
     } else if (!selectedDate) {
       newErrors.date = "Date is required for time series predictions.";
       valid = false;
@@ -326,14 +285,12 @@ const DataPredictor = () => {
       isTimeSeries
         ? modelRouteMapping
             .filter((model) => model.time_series)
-            .map((model) => model) // ["LSTM", "Exponential Smoothing", "ARIMA"]
+            .map((model) => model)
         : modelRouteMapping
             .filter((model) => !model.time_series)
-            .map((model) => model) // ["Linear Regression", "Random Forest", "SVM"];
+            .map((model) => model)
     );
   }, [isTimeSeries]);
-
-  console.log({ fileInput1, columns });
 
   const handleSubmit = () => {
     if (validateForm()) {
@@ -346,7 +303,6 @@ const DataPredictor = () => {
           },
         })
         .then((response) => {
-          console.log(response.data);
           if (response.data.error) {
             setPredictionText(response.data.error);
             return;
@@ -363,10 +319,9 @@ const DataPredictor = () => {
             formData2.append("date_column", dateColumn);
             formData2.append("target_column", targetColumn);
           } else {
-            const featureClomunsValues = featureColumns.join(", ");
-            formData2.append("feature_col", featureClomunsValues);
+            formData2.append("feature_col", featureColumn);
             formData2.append("target_col", targetColumn);
-            formData2.append("user_input", featureValues);
+            formData2.append("user_input", parseFloat(featureValue));
           }
 
           axios
@@ -391,22 +346,21 @@ const DataPredictor = () => {
               if (isTimeSeries) {
                 setPredictionText(response.data.forecast);
                 setGraphImage(response.data.url);
+              } else {
+                // [5.870987341992519, 21.646449773466514, 0.08386263934122229]
+                // predicted data, mean squared error, r2 score
+                setPredictionText(
+                  <>
+                    <p>Predicted value: {response.data[0]}</p>
+                    <p>Mean Squared Error: {response.data[1]}</p>
+                    <p>R2 Score: {response.data[2]}</p>
+                  </>
+                );
               }
             });
         });
-      return;
-
-      // Simulate a backend call with prediction result
-
-      // const mockPrediction = "The predicted value is 42.";
-      // const mockGraphImage =
-      //   "https://via.placeholder.com/600x400.png?text=Prediction+Graph";
-      // setPredictionText(mockPrediction);
-      // setGraphImage(mockGraphImage);
     }
   };
-
-  console.log({ predictionText, graphImage });
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -443,9 +397,9 @@ const DataPredictor = () => {
                 <Grid item xs={12}>
                   <FeatureColumnSelector
                     columns={columns}
-                    featureColumns={featureColumns}
-                    setFeatureColumns={setFeatureColumns}
-                    error={errors.featureColumns}
+                    featureColumn={featureColumn}
+                    setFeatureColumn={setFeatureColumn}
+                    error={errors.featureColumn}
                   />
                 </Grid>
               )}
@@ -469,13 +423,12 @@ const DataPredictor = () => {
               </Grid>
               <Grid item xs={12}>
                 <FeatureInput
-                  isTimeSeries={isTimeSeries}
-                  featureColumns={featureColumns}
-                  featureValues={featureValues}
+                  featureColumn={featureColumn}
+                  featureValue={featureValue}
                   handleFeatureChange={handleFeatureChange}
                   selectedDate={selectedDate}
                   setSelectedDate={setSelectedDate}
-                  error={{ ...errors.featureValues, date: errors.date }}
+                  error={errors.featureValue}
                 />
               </Grid>
               <Grid item xs={12}>
