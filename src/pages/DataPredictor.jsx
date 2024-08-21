@@ -385,7 +385,14 @@ const DataPredictor = () => {
               }
 
               if (isTimeSeries) {
-                setPredictionText(response.data.forecast);
+                const data = JSON.parse(response.data.forecast);
+                setPredictionText(
+                  <>
+                    <p>Predicted value: {data[0]}</p>
+                    <p>Mean Squared Error: {data[1]}</p>
+                    <p>R2 Score: {data[2]}</p>
+                  </>
+                );
                 setGraphImage(response.data.url);
               } else {
                 // [5.870987341992519, 21.646449773466514, 0.08386263934122229]
