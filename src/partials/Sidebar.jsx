@@ -296,7 +296,7 @@ function Sidebar({
               >
                 <NavLink
                   end
-                  to=""
+                  to="history"
                   className={`block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${
                     pathname.includes("campaigns")
                       ? ""
