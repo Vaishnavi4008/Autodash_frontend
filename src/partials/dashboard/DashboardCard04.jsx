@@ -32,54 +32,55 @@
       })),
     };
 
-    // Chart options with zoom and pan configuration
-    const options = {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false, // Disable the default legend
-        },
-        title: {
-          display: true,
-          text: 'Comparison of Different Stores',
+  // Chart options with zoom and pan configuration
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false, // Ensure the chart does not maintain the aspect ratio
+    plugins: {
+      legend: {
+        display: false, // Disable the default legend
+      },
+      title: {
+        display: true,
+        text: 'Comparison of Different Stores',
+      },
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: 'x', // Allow panning on the x-axis
         },
         zoom: {
-          pan: {
+          wheel: {
             enabled: true,
-            mode: 'x', // Allow panning on the x-axis
           },
-          zoom: {
-            wheel: {
-              enabled: true,
-            },
-            pinch: {
-              enabled: true,
-            },
-            mode: 'x', // Allow zooming on the x-axis
+          pinch: {
+            enabled: true,
+          },
+          mode: 'x', // Allow zooming on the x-axis
+        },
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Stores',
+        },
+        ticks: {
+          font: {
+            size: 8, // Set the font size of the x-axis labels
           },
         },
       },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: 'Stores',
-          },
-          ticks: {
-            font: {
-              size: 8, // Set the font size of the x-axis labels
-            },
-          },
+      y: {
+        title: {
+          display: true,
+          text: 'Sales Value',
         },
-        y: {
-          title: {
-            display: true,
-            text: 'Sales Value',
-          },
-          beginAtZero: true,
-        },
+        beginAtZero: true,
       },
-    };
+    },
+  };
 
     useEffect(() => {
       const ul = legend.current;

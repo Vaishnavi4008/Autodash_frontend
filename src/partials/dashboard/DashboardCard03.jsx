@@ -1,9 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import zoomPlugin from 'chartjs-plugin-zoom'; // Import the zoom plugin
 import EditMenu from '../../components/DropdownEditMenu';
-import { tailwindConfig } from '../../utils/Utils';
+import zoomPlugin from 'chartjs-plugin-zoom'; // Import the zoom plugin
 
 // Register Chart.js modules and the zoom plugin
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, zoomPlugin);
@@ -13,21 +12,18 @@ function DashboardCard03({ fetchedChartData }) {
   const legendRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
-  // Check if fetchedChartData or its dataset is undefined or null
   if (!fetchedChartData || !fetchedChartData.dataset) return null;
 
-  // Define a color palette
   const colors = [
-    tailwindConfig().theme.colors.red[500],
-    tailwindConfig().theme.colors.green[500],
-    tailwindConfig().theme.colors.blue[500],
-    tailwindConfig().theme.colors.yellow[500],
-    tailwindConfig().theme.colors.purple[500],
+    '#ef4444', // red
+    '#10b981', // green
+    '#3b82f6', // blue
+    '#f59e0b', // yellow
+    '#8b5cf6', // purple
   ];
 
   useEffect(() => {
     if (canvasRef.current) {
-      // Create chart instance
       chartInstanceRef.current = new Chart(canvasRef.current, {
         type: 'line',
         data: {
@@ -42,7 +38,8 @@ function DashboardCard03({ fetchedChartData }) {
           })),
         },
         options: {
-          responsive: true,
+          maintainAspectRatio: false, // Disable the aspect ratio
+          responsive: true, // Ensure the chart is responsive
           plugins: {
             legend: {
               display: false, // Disable default legend
@@ -51,19 +48,12 @@ function DashboardCard03({ fetchedChartData }) {
               display: true,
               text: 'Multiple Line Chart Example',
             },
-            zoom: {
-              pan: {
-                enabled: true,
-                mode: 'xy',
-              },
-              zoom: {
-                wheel: {
-                  enabled: true,
-                },
-                pinch: {
-                  enabled: true,
-                },
-                mode: 'xy',
+            datalabels: {
+              display: true,
+              color: 'white',
+              align: 'top',
+              font: {
+                weight: 'bold',
               },
             },
           },
@@ -85,11 +75,10 @@ function DashboardCard03({ fetchedChartData }) {
         },
       });
 
-      // Generate custom legend
       const ul = legendRef.current;
       if (ul) {
-        ul.innerHTML = ''; // Clear previous legend items
-        chartInstanceRef.current.data.datasets.forEach((dataset, index) => {
+        ul.innerHTML = '';
+        chartInstanceRef.current.data.datasets.forEach((dataset) => {
           const li = document.createElement('li');
           li.style.display = 'flex';
           li.style.alignItems = 'center';
@@ -112,7 +101,6 @@ function DashboardCard03({ fetchedChartData }) {
     }
 
     return () => {
-      // Cleanup on unmount
       if (chartInstanceRef.current) {
         chartInstanceRef.current.destroy();
       }
@@ -124,7 +112,6 @@ function DashboardCard03({ fetchedChartData }) {
       <div className="px-5 pt-5">
         <header className="flex justify-between items-start mb-2">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Orders Delivered</h2>
-          {/* Menu button */}
           <EditMenu align="right" className="relative inline-flex">
             <li>
               <Link className="font-medium text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 flex py-1 px-3" to="#0">
@@ -143,8 +130,7 @@ function DashboardCard03({ fetchedChartData }) {
             </li>
           </EditMenu>
         </header>
-        <div className="grow max-sm:max-h-[250px] xl:max-h-[250px]">
-          {/* Render the line chart with multiple lines */}
+        <div className="grow max-sm:max-h-[250px] xl:max-h-[250px]" style={{ height: '300px' }}>
           <canvas ref={canvasRef}></canvas>
         </div>
         <div className="px-5 pt-2 pb-6">
