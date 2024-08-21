@@ -45,7 +45,7 @@ const modelRouteMapping = [
   { model: "ARIMA", route: "/ml/arima", time_series: true },
 ];
 
-const FileUploader = ({ onFileUpload }) => (
+const FileUploader = ({ onFileUpload, fileInput1 }) => (
   <Card className="file-uploader">
     <CardContent>
       <div className="border-[3px] border-gray-500 border-dashed p-2.5 rounded-[10px] mb-4">
@@ -59,7 +59,9 @@ const FileUploader = ({ onFileUpload }) => (
           />
           <div className="flex flex-col items-center justify-center py-10 text-center">
             <p className="m-0">
-              Drag your CSV file here or click in this area.
+              {fileInput1
+                ? `${fileInput1?.name} chosen successfully`
+                : "Drag your CSV file here or click in this area."}
             </p>
           </div>
         </div>
@@ -80,6 +82,24 @@ const TargetColumnSelector = ({
       value={targetColumn}
       onChange={(e) => setTargetColumn(e.target.value)}
       label="Target Column"
+    >
+      {columns.map((col) => (
+        <MenuItem key={col} value={col}>
+          {col}
+        </MenuItem>
+      ))}
+    </Select>
+    {error && <Typography color="error">{error}</Typography>}
+  </FormControl>
+);
+
+const DateColumnSelector = ({ columns, dateColumn, setDateColumn, error }) => (
+  <FormControl fullWidth margin="normal" error={!!error}>
+    <InputLabel>Date Column</InputLabel>
+    <Select
+      value={dateColumn}
+      onChange={(e) => setDateColumn(e.target.value)}
+      label="Date Column"
     >
       {columns.map((col) => (
         <MenuItem key={col} value={col}>
@@ -230,13 +250,14 @@ const DataPredictor = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [predictionText, setPredictionText] = useState("");
   const [graphImage, setGraphImage] = useState("");
+  const [dateColumn, setDateColumn] = useState("");
 
   const [errors, setErrors] = useState({});
 
   const handleFileInput = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFileInput1(file.name);
+      setFileInput1(file);
 
       // Parse the CSV file
       Papa.parse(file, {
@@ -312,29 +333,70 @@ const DataPredictor = () => {
     );
   }, [isTimeSeries]);
 
+  console.log({ fileInput1, columns });
+
   const handleSubmit = () => {
     if (validateForm()) {
-      // Simulate a backend call with prediction result
-      const featureClomunsValues = featureColumns.join(", ");
       const formData = new FormData();
-      formData.append("file", fileInput1);
-      formData.append("target_col", targetColumn);
-      formData.append("feature_col", featureClomunsValues);
-      formData.append("user_input", JSON.stringify(featureValues));
-      formData.append("date_column", selectedDate);
-
+      formData.append("code", fileInput1);
       axios
-        .post(
-          `https://localhost:5000${
-            modelRouteMapping.find((model) => model.model === selectedModel)
-              .route
-          }`,
-          formData
-        )
+        .post("http://localhost:5000/upload_csv", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((response) => {
-          setPredictionText(response.data.forecast);
-          setGraphImage(response.data.url);
+          console.log(response.data);
+          if (response.data.error) {
+            setPredictionText(response.data.error);
+            return;
+          }
+          if (response.data.filePath === undefined) {
+            setPredictionText("Error in file upload");
+            return;
+          }
+
+          const formData2 = new FormData();
+          formData2.append("csv_path", response.data.filePath);
+
+          if (isTimeSeries) {
+            formData2.append("date_column", dateColumn);
+            formData2.append("target_column", targetColumn);
+          } else {
+            const featureClomunsValues = featureColumns.join(", ");
+            formData2.append("feature_col", featureClomunsValues);
+            formData2.append("target_col", targetColumn);
+            formData2.append("user_input", featureValues);
+          }
+
+          axios
+            .post(
+              `http://localhost:5000${
+                modelRouteMapping.find((model) => model.model === selectedModel)
+                  .route
+              }`,
+              formData2,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            )
+            .then((response) => {
+              if (response.data.error) {
+                setPredictionText(response.data.error);
+                return;
+              }
+
+              if (isTimeSeries) {
+                setPredictionText(response.data.forecast);
+                setGraphImage(response.data.url);
+              }
+            });
         });
+      return;
+
+      // Simulate a backend call with prediction result
 
       // const mockPrediction = "The predicted value is 42.";
       // const mockGraphImage =
@@ -351,7 +413,10 @@ const DataPredictor = () => {
       <Container maxWidth="md">
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <FileUploader onFileUpload={handleFileInput} />
+            <FileUploader
+              onFileUpload={handleFileInput}
+              fileInput1={fileInput1}
+            />
           </Grid>
           {columns.length > 0 && (
             <>
@@ -374,14 +439,26 @@ const DataPredictor = () => {
                   label="Is this a time series prediction?"
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FeatureColumnSelector
-                  columns={columns}
-                  featureColumns={featureColumns}
-                  setFeatureColumns={setFeatureColumns}
-                  error={errors.featureColumns}
-                />
-              </Grid>
+              {!isTimeSeries && (
+                <Grid item xs={12}>
+                  <FeatureColumnSelector
+                    columns={columns}
+                    featureColumns={featureColumns}
+                    setFeatureColumns={setFeatureColumns}
+                    error={errors.featureColumns}
+                  />
+                </Grid>
+              )}
+              {isTimeSeries && (
+                <Grid item xs={12}>
+                  <DateColumnSelector
+                    columns={columns}
+                    dateColumn={dateColumn}
+                    setDateColumn={setDateColumn}
+                    error={errors.dateColumn}
+                  />
+                </Grid>
+              )}
               <Grid item xs={12}>
                 <ModelSelector
                   availableModels={availableModels}
