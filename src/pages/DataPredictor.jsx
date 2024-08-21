@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
 import {
   TextField,
@@ -20,8 +20,32 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import axios from "axios";
 
-const FileUploader = ({ onFileUpload }) => (
+// list of model routes
+// /ml/linear_regression, /ml/polynomial_regression, /ml/random_forest, /ml/decision_tree, /ml/xg_boost, /ml/cat_boost, /ml/lstmm, /ml/ex, /ml/arima,
+
+const modelRouteMapping = [
+  {
+    model: "Linear Regression",
+    route: "/ml/linear_regression",
+    time_series: false,
+  },
+  {
+    model: "Polynomial Regression",
+    route: "/ml/polynomial_regression",
+    time_series: false,
+  },
+  { model: "Random Forest", route: "/ml/random_forest", time_series: false },
+  { model: "Decision Tree", route: "/ml/decision_tree", time_series: false },
+  { model: "XG Boost", route: "/ml/xg_boost", time_series: false },
+  { model: "Cat Boost", route: "/ml/cat_boost", time_series: false },
+  { model: "LSTM", route: "/ml/lstm", time_series: true },
+  { model: "Exponential Smoothing", route: "/ml/ex", time_series: true },
+  { model: "ARIMA", route: "/ml/arima", time_series: true },
+];
+
+const FileUploader = ({ onFileUpload, fileInput1 }) => (
   <Card className="file-uploader">
     <CardContent>
       <div className="border-[3px] border-gray-500 border-dashed p-2.5 rounded-[10px] mb-4">
@@ -34,7 +58,11 @@ const FileUploader = ({ onFileUpload }) => (
             onChange={onFileUpload}
           />
           <div className="flex flex-col items-center justify-center py-10 text-center">
-            <p className="m-0">Drag your CSV file here or click in this area.</p>
+            <p className="m-0">
+              {fileInput1
+                ? `${fileInput1?.name} chosen successfully`
+                : "Drag your CSV file here or click in this area."}
+            </p>
           </div>
         </div>
       </div>
@@ -42,7 +70,12 @@ const FileUploader = ({ onFileUpload }) => (
   </Card>
 );
 
-const TargetColumnSelector = ({ columns, targetColumn, setTargetColumn, error }) => (
+const TargetColumnSelector = ({
+  columns,
+  targetColumn,
+  setTargetColumn,
+  error,
+}) => (
   <FormControl fullWidth margin="normal" error={!!error}>
     <InputLabel>Target Column</InputLabel>
     <Select
@@ -60,21 +93,35 @@ const TargetColumnSelector = ({ columns, targetColumn, setTargetColumn, error })
   </FormControl>
 );
 
-const FeatureColumnSelector = ({ columns, featureColumns, setFeatureColumns, error }) => (
+const DateColumnSelector = ({ columns, dateColumn, setDateColumn, error }) => (
   <FormControl fullWidth margin="normal" error={!!error}>
-    <InputLabel>Feature Columns</InputLabel>
+    <InputLabel>Date Column</InputLabel>
     <Select
-      multiple
-      value={featureColumns}
-      onChange={(e) => setFeatureColumns(e.target.value)}
-      label="Feature Columns"
-      renderValue={(selected) => (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-          {selected.map((value) => (
-            <Chip key={value} label={value} />
-          ))}
-        </Box>
-      )}
+      value={dateColumn}
+      onChange={(e) => setDateColumn(e.target.value)}
+      label="Date Column"
+    >
+      {columns.map((col) => (
+        <MenuItem key={col} value={col}>
+          {col}
+        </MenuItem>
+      ))}
+    </Select>
+    {error && <Typography color="error">{error}</Typography>}
+  </FormControl>
+);
+const FeatureColumnSelector = ({
+  columns,
+  featureColumn,
+  setFeatureColumn,
+  error,
+}) => (
+  <FormControl fullWidth margin="normal" error={!!error}>
+    <InputLabel>Feature Column</InputLabel>
+    <Select
+      value={featureColumn}
+      onChange={(e) => setFeatureColumn(e.target.value)}
+      label="Feature Column"
     >
       {columns.map((col) => (
         <MenuItem key={col} value={col}>
@@ -86,7 +133,12 @@ const FeatureColumnSelector = ({ columns, featureColumns, setFeatureColumns, err
   </FormControl>
 );
 
-const ModelSelector = ({ availableModels, selectedModel, setSelectedModel, error }) => (
+const ModelSelector = ({
+  availableModels,
+  selectedModel,
+  setSelectedModel,
+  error,
+}) => (
   <FormControl fullWidth margin="normal" error={!!error}>
     <InputLabel>Model</InputLabel>
     <Select
@@ -95,52 +147,33 @@ const ModelSelector = ({ availableModels, selectedModel, setSelectedModel, error
       label="Model"
     >
       {availableModels.map((model) => (
-        <MenuItem key={model} value={model}>
-          {model}
+        <MenuItem key={model.model} value={model.model}>
+          {model.model}
         </MenuItem>
       ))}
     </Select>
     {error && <Typography color="error">{error}</Typography>}
   </FormControl>
 );
-
 const FeatureInput = ({
-  isTimeSeries,
-  featureColumns,
-  featureValues,
+  featureColumn,
+  featureValue,
   handleFeatureChange,
-  selectedDate,
-  setSelectedDate,
   error,
-}) =>
-  !isTimeSeries ? (
-    <div>
-      <Typography variant="h6">Enter Feature Values:</Typography>
-      {featureColumns.map((col) => (
-        <TextField
-          key={col}
-          label={col}
-          value={featureValues[col] || ""}
-          onChange={(e) => handleFeatureChange(col, e.target.value)}
-          margin="normal"
-          fullWidth
-          error={!!error[col]}
-          helperText={error[col]}
-        />
-      ))}
-    </div>
-  ) : (
-    <div>
-      <Typography variant="h6">Select Date:</Typography>
-      <DatePicker
-        value={selectedDate}
-        onChange={(date) => setSelectedDate(date)}
-        renderInput={(props) => (
-          <TextField {...props} fullWidth error={!!error.date} helperText={error.date} />
-        )}
-      />
-    </div>
-  );
+}) => (
+  <div>
+    <Typography variant="h6">Enter Feature Value:</Typography>
+    <TextField
+      label={featureColumn}
+      value={featureValue || ""}
+      onChange={(e) => handleFeatureChange(e.target.value)}
+      margin="normal"
+      fullWidth
+      error={!!error}
+      helperText={error}
+    />
+  </div>
+);
 
 const PredictionOutput = ({ predictionText, graphImage }) => (
   <Card className="prediction-output">
@@ -151,7 +184,11 @@ const PredictionOutput = ({ predictionText, graphImage }) => (
       </Typography>
       {graphImage && (
         <div style={{ marginTop: "20px", textAlign: "center" }}>
-          <img src={graphImage} alt="Prediction Graph" style={{ maxWidth: "100%" }} />
+          <img
+            src={graphImage}
+            alt="Prediction Graph"
+            style={{ maxWidth: "100%" }}
+          />
         </div>
       )}
     </CardContent>
@@ -168,32 +205,32 @@ const SubmitButton = ({ onSubmit }) => (
     Submit
   </Button>
 );
-
 const DataPredictor = () => {
+  // State variables
   const [fileInput1, setFileInput1] = useState("");
   const [columns, setColumns] = useState([]);
   const [isTimeSeries, setIsTimeSeries] = useState(false);
   const [targetColumn, setTargetColumn] = useState("");
-  const [featureColumns, setFeatureColumns] = useState([]);
+  const [featureColumn, setFeatureColumn] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
-  const [featureValues, setFeatureValues] = useState({});
+  const [featureValue, setFeatureValue] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [predictionText, setPredictionText] = useState("");
   const [graphImage, setGraphImage] = useState("");
-
+  const [dateColumn, setDateColumn] = useState("");
   const [errors, setErrors] = useState({});
 
+  // Handlers
   const handleFileInput = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFileInput1(file.name);
+      setFileInput1(file);
 
       // Parse the CSV file
       Papa.parse(file, {
         header: true,
         dynamicTyping: true,
         complete: (results) => {
-          // Get the column names
           const colNames = results.meta.fields;
           setColumns(colNames);
         },
@@ -204,11 +241,8 @@ const DataPredictor = () => {
     }
   };
 
-  const handleFeatureChange = (column, value) => {
-    setFeatureValues({
-      ...featureValues,
-      [column]: value,
-    });
+  const handleFeatureChange = (value) => {
+    setFeatureValue(value);
   };
 
   const validateForm = () => {
@@ -220,8 +254,8 @@ const DataPredictor = () => {
       valid = false;
     }
 
-    if (!isTimeSeries && featureColumns.length === 0) {
-      newErrors.featureColumns = "At least one feature column is required.";
+    if (!isTimeSeries && !featureColumn) {
+      newErrors.featureColumn = "Feature column is required.";
       valid = false;
     }
 
@@ -231,14 +265,10 @@ const DataPredictor = () => {
     }
 
     if (!isTimeSeries) {
-      const featureErrors = {};
-      featureColumns.forEach((col) => {
-        if (!featureValues[col]) {
-          featureErrors[col] = `${col} is required.`;
-          valid = false;
-        }
-      });
-      newErrors.featureValues = featureErrors;
+      if (!featureValue) {
+        newErrors.featureValue = "Feature value is required.";
+        valid = false;
+      }
     } else if (!selectedDate) {
       newErrors.date = "Date is required for time series predictions.";
       valid = false;
@@ -248,17 +278,87 @@ const DataPredictor = () => {
     return valid;
   };
 
-  const availableModels = isTimeSeries
-    ? ["ARIMA", "LSTM", "Prophet"]
-    : ["Linear Regression", "Random Forest", "SVM"];
+  const [availableModels, setAvailableModels] = useState([]);
+
+  useEffect(() => {
+    setAvailableModels(
+      isTimeSeries
+        ? modelRouteMapping
+            .filter((model) => model.time_series)
+            .map((model) => model)
+        : modelRouteMapping
+            .filter((model) => !model.time_series)
+            .map((model) => model)
+    );
+  }, [isTimeSeries]);
 
   const handleSubmit = () => {
     if (validateForm()) {
-      // Simulate a backend call with prediction result
-      const mockPrediction = "The predicted value is 42.";
-      const mockGraphImage = "https://via.placeholder.com/600x400.png?text=Prediction+Graph";
-      setPredictionText(mockPrediction);
-      setGraphImage(mockGraphImage);
+      const formData = new FormData();
+      formData.append("code", fileInput1);
+      axios
+        .post("http://localhost:5000/upload_csv", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          if (response.data.error) {
+            setPredictionText(response.data.error);
+            return;
+          }
+          if (response.data.filePath === undefined) {
+            setPredictionText("Error in file upload");
+            return;
+          }
+
+          const formData2 = new FormData();
+          formData2.append("csv_path", response.data.filePath);
+
+          if (isTimeSeries) {
+            formData2.append("date_column", dateColumn);
+            formData2.append("target_column", targetColumn);
+          } else {
+            formData2.append("feature_col", featureColumn);
+            formData2.append("target_col", targetColumn);
+            formData2.append("user_input", parseFloat(featureValue));
+          }
+
+          axios
+            .post(
+              `http://localhost:5000${
+                modelRouteMapping.find((model) => model.model === selectedModel)
+                  .route
+              }`,
+              formData2,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            )
+            .then((response) => {
+              if (response.data.error) {
+                setPredictionText(response.data.error);
+                return;
+              }
+
+              if (isTimeSeries) {
+                setPredictionText(response.data.forecast);
+                setGraphImage(response.data.url);
+              } else {
+                // [5.870987341992519, 21.646449773466514, 0.08386263934122229]
+                // predicted data, mean squared error, r2 score
+                setPredictionText(
+                  <>
+                    <p>Predicted value: {response.data[0]}</p>
+                    <p>Mean Squared Error: {response.data[1]}</p>
+                    <p>R2 Score: {response.data[2]}</p>
+                  </>
+                );
+              }
+            });
+        });
     }
   };
 
@@ -267,7 +367,10 @@ const DataPredictor = () => {
       <Container maxWidth="md">
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <FileUploader onFileUpload={handleFileInput} />
+            <FileUploader
+              onFileUpload={handleFileInput}
+              fileInput1={fileInput1}
+            />
           </Grid>
           {columns.length > 0 && (
             <>
@@ -290,14 +393,26 @@ const DataPredictor = () => {
                   label="Is this a time series prediction?"
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FeatureColumnSelector
-                  columns={columns}
-                  featureColumns={featureColumns}
-                  setFeatureColumns={setFeatureColumns}
-                  error={errors.featureColumns}
-                />
-              </Grid>
+              {!isTimeSeries && (
+                <Grid item xs={12}>
+                  <FeatureColumnSelector
+                    columns={columns}
+                    featureColumn={featureColumn}
+                    setFeatureColumn={setFeatureColumn}
+                    error={errors.featureColumn}
+                  />
+                </Grid>
+              )}
+              {isTimeSeries && (
+                <Grid item xs={12}>
+                  <DateColumnSelector
+                    columns={columns}
+                    dateColumn={dateColumn}
+                    setDateColumn={setDateColumn}
+                    error={errors.dateColumn}
+                  />
+                </Grid>
+              )}
               <Grid item xs={12}>
                 <ModelSelector
                   availableModels={availableModels}
@@ -308,13 +423,12 @@ const DataPredictor = () => {
               </Grid>
               <Grid item xs={12}>
                 <FeatureInput
-                  isTimeSeries={isTimeSeries}
-                  featureColumns={featureColumns}
-                  featureValues={featureValues}
+                  featureColumn={featureColumn}
+                  featureValue={featureValue}
                   handleFeatureChange={handleFeatureChange}
                   selectedDate={selectedDate}
                   setSelectedDate={setSelectedDate}
-                  error={{ ...errors.featureValues, date: errors.date }}
+                  error={errors.featureValue}
                 />
               </Grid>
               <Grid item xs={12}>

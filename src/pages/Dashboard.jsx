@@ -63,7 +63,7 @@ function Dashboard() {
             </div>
 
             <Routes>
-              <Route exact path="" element={<DashboardCreator pageNo={pageNo} />} />
+              <Route exact path="" element={<DashboardCreator pageNo={pageNo} setpageNo={setpageNo} />} />
               <Route path="prediction" element={<DataPredictor />} />
               <Route path="chat" element={<DataChat />} />
             </Routes>

@@ -17,6 +17,7 @@ import DashboardCard13 from "../partials/dashboard/DashboardCard13";
 import DashboardCard14 from "../partials/dashboard/DashboardCard14";
 import DashboardCard15 from "../partials/dashboard/DashboardCard15";
 import DashboardCard16 from "../partials/dashboard/DashboardCard16";
+import axios from "axios";
 
 const DataChat = () => {
   const [fileInput2, setFileInput2] = useState("");
@@ -30,13 +31,13 @@ const DataChat = () => {
     username: "",
     password: "",
     table: "",
-    where: ""
+    where: "",
   });
   const [formVisible, setFormVisible] = useState("");
 
   const handleFileInput2 = (e) => {
     console.log(e.target.files[0]);
-    setFileInput2(e.target.files[0].name);
+    setFileInput2(e.target.files[0]);
   };
 
   const promptMap = {
@@ -61,7 +62,7 @@ const DataChat = () => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -71,6 +72,55 @@ const DataChat = () => {
     // Optionally, you can also hide the form after submission
     setFormVisible("");
   };
+
+  console.log(fileInput2);
+  console.log(Boolean(fileInput2));
+
+  const handleSubmit = () => {
+    setIsDataFetched(false);
+    // formdata
+    const formData = new FormData();
+    fileInput2 && formData.append("code", fileInput2);
+    formData.append("prompt", prompt);
+    axios
+      .post("http://localhost:5000/chat", formData, {
+        headers: {
+          "Content-Type": fileInput2
+            ? "multipart/form-data"
+            : "application/json",
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        const output = res.data || {};
+        console.log({ output });
+
+        if (output.response_type === "Plot") {
+          const newURL =
+            "http://localhost/" + output.latest_image_url.split("html")[1];
+          setPromptResult(
+            <img
+              src={`data:image/png;base64,${output.latest_image_url}`}
+              alt="plot"
+              style={{ width: "100%", height: "100%" }}
+            />
+          );
+        } else if (
+          output.response_type === "Number" ||
+          output.response_type === "String" ||
+          output.response_type === "DataFrame"
+        ) {
+          setPromptResult(<p>{output.response}</p>);
+        }
+        setIsDataFetched(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsDataFetched(true);
+      });
+  };
+
+  console.log({ promptResult });
 
   return (
     <div className="flex flex-col items-center h-screen">
@@ -88,62 +138,6 @@ const DataChat = () => {
             <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
           </svg>
           <span className="ml-3 max-xs:sr-only">Connect with MySQL</span>
-        </button>
-        <button
-          className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
-          onClick={() => handleConnectClick("AirTable")}
-        >
-          <svg
-            className="fill-current shrink-0"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-          >
-            <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
-          </svg>
-          <span className="ml-3 max-xs:sr-only">Connect with Air Table</span>
-        </button>
-        <button
-          className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
-          onClick={() => handleConnectClick("DataBricks")}
-        >
-          <svg
-            className="fill-current shrink-0"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-          >
-            <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
-          </svg>
-          <span className="ml-3 max-xs:sr-only">Connect with Data Bricks</span>
-        </button>
-        <button
-          className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
-          onClick={() => handleConnectClick("GoogleBigQuery")}
-        >
-          <svg
-            className="fill-current shrink-0"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-          >
-            <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
-          </svg>
-          <span className="ml-3 max-xs:sr-only">Connect with Google Big Query</span>
-        </button>
-        <button
-          className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
-          onClick={() => handleConnectClick("mongoDB")}
-        >
-          <svg
-            className="fill-current shrink-0"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-          >
-            <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
-          </svg>
-          <span className="ml-3 max-xs:sr-only">Connect with mongoDB</span>
         </button>
       </div>
 
@@ -225,85 +219,78 @@ const DataChat = () => {
           </form>
         </div>
       )}
-<div
+      <div
         className="bg-white p-7 rounded mx-auto"
         style={{ display: "flex", alignItems: "center" }}
       >
-      {/* Input CSV File Section */}
-      <div className="bg-white p-7 rounded mx-auto">
-        <div className="flex flex-col items-center justify-center py-10 text-center">
-          <div className="relative flex flex-col p-4 text-gray-400 border border-gray-200 rounded">
-            {fileInput2 ? (
-              <>{fileInput2} Uploaded successfully</>
-            ) : (
-              <div
-                className="relative flex flex-col text-gray-400 border-dashed rounded cursor-pointer"
-              >
-                <input
-                  accept="*"
-                  type="file"
-                  multiple
-                  className="absolute inset-0 z-50 w-full h-full p-0 m-0 outline-none opacity-0 cursor-pointer"
-                  onChange={handleFileInput2}
-                />
-                <div className="flex flex-col items-center justify-center py-10 text-center">
-                  <svg
-                    className="w-6 h-6 mr-1 text-current-50"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <p className="m-0">
-                    Drag your files here or click in this area.
-                  </p>
+        {/* Input CSV File Section */}
+        <div className="bg-white p-7 rounded mx-auto">
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <div className="relative flex flex-col p-4 text-gray-400 border border-gray-200 rounded">
+              {fileInput2 ? (
+                <>{fileInput2?.name} Uploaded successfully</>
+              ) : (
+                <div className="relative flex flex-col text-gray-400 border-dashed rounded cursor-pointer">
+                  <input
+                    accept="*"
+                    type="file"
+                    multiple
+                    className="absolute inset-0 z-50 w-full h-full p-0 m-0 outline-none opacity-0 cursor-pointer"
+                    onChange={handleFileInput2}
+                  />
+                  <div className="flex flex-col items-center justify-center py-10 text-center">
+                    <svg
+                      className="w-6 h-6 mr-1 text-current-50"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <p className="m-0">
+                      Drag your files here or click in this area.
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Prompt Input Section */}
-      <div className="bg-white p-7 rounded mx-auto text-center">
-        <p className="m-0 mt-10">Enter the prompt and click on submit</p>
-        <textarea
-          type="text"
-          className="border border-gray-200 rounded p-2"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          style={{ marginTop: "20px" }}
-          rows="4"
-        />
-        <button
-          className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
-          style={{ marginTop: "20px" }}
-          onClick={() => {
-            setPromptResult(<CircularProgress />);
-            setTimeout(() => {
-              setPromptResult(promptMap[prompt]);
-            }, 5000);
-          }}
+        {/* Prompt Input Section */}
+        <div className="bg-white p-7 rounded mx-auto text-center">
+          <p className="m-0 mt-10">Enter the prompt and click on submit</p>
+          <textarea
+            type="text"
+            className="border-[2px] border-gray-500 rounded p-2"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            style={{ marginTop: "20px" }}
+            rows="4"
+          />
+          <button
+            className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
+            style={{ marginTop: "20px" }}
+            onClick={handleSubmit}
+          >
+            Submit
+          </button>
+          <div>{promptResult}</div>
+        </div>
+
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={!isDataFetched}
         >
-          Submit
-        </button>
-        <div>{promptResult}</div>
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </div>
-
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={!isDataFetched}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
-    </div>
     </div>
   );
 };
