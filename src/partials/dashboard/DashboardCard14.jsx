@@ -131,8 +131,8 @@ function DashboardCard14({ fetchedChartData }) {
       <div className="px-5 pt-5">
         <header className="flex justify-between items-start mb-2">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Scatter Plot</h2>
-          {/* Menu button */}
-          <EditMenu align="right" className="relative inline-flex">
+        
+          {/* <EditMenu align="right" className="relative inline-flex">
             <li>
               <Link className="font-medium text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 flex py-1 px-3" to="#0">
                 Option 1
@@ -148,7 +148,7 @@ function DashboardCard14({ fetchedChartData }) {
                 Remove
               </Link>
             </li>
-          </EditMenu>
+          </EditMenu> */}
         </header>
         <div className="grow max-sm:max-h-[250px] xl:max-h-[250px]">
           {/* Render the scatter plot */}
