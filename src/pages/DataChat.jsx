@@ -335,12 +335,7 @@ const DataChat = () => {
         <button
           className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
           style={{ marginTop: "20px" }}
-          onClick={() => {
-            setPromptResult(<CircularProgress />);
-            setTimeout(() => {
-              setPromptResult(promptMap[prompt]);
-            }, 5000);
-          }}
+          onClick={handleSubmit}
         >
           Submit
         </button>
