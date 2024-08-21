@@ -7,7 +7,7 @@
     const legend = useRef(null);
 
     if (!fetchedChartData) return null;
-    const dataLength = fetchedChartData.labels.length;
+    const dataLength = fetchedChartData?.labels?.length;
     const initialDisplayCount = 15;
 
     // Define a broader range of colors
