@@ -46,7 +46,14 @@ const LineChartExample = ({ chartData }) => {
               zoom: {
                 enabled: true,
                 mode: 'xy', // Allow zooming in both directions
-                drawTime: 'afterDatasetsDraw', // The time at which the zooming action is drawn
+                drag: {
+                  enabled: true, // Enable drag-to-zoom feature
+                  backgroundColor: 'rgba(0,0,0,0.15)', // Optional: Customize the drag area color
+                },
+                limits: {
+                  x: { min: 'original', max: 'original' },
+                  y: { min: 'original', max: 'original' },
+                },
               },
             },
           },
@@ -102,6 +109,13 @@ const LineChartExample = ({ chartData }) => {
     };
   }, [chartData]);
 
+  // Function to reset zoom
+  const resetZoom = () => {
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.resetZoom();
+    }
+  };
+
   return (
     <>
       <div>
@@ -109,6 +123,12 @@ const LineChartExample = ({ chartData }) => {
       </div>
       <div className="px-5 pt-2 pb-6">
         <ul ref={legendRef} className="flex flex-wrap justify-center -m-1"></ul>
+        <button 
+          onClick={resetZoom} 
+          className="mt-4 p-2 bg-blue-500 text-white rounded"
+        >
+          Reset Zoom
+        </button>
       </div>
     </>
   );
@@ -132,7 +152,7 @@ function DashboardCard02({ fetchedChartData }) {
         <header className="flex justify-between items-start mb-2">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">{fetchedChartData.chartTitle}</h2>
         </header>
-        <div className="grow max-sm:max-h-[328px] max-h-[300px]">
+        <div className="grow max-sm:max-h-[1000px] max-h-[1000px]">
           <LineChartExample chartData={chartData} />
         </div>
       </div>
