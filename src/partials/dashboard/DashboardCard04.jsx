@@ -35,6 +35,7 @@ function DashboardCard04({ fetchedChartData }) {
   // Chart options with zoom and pan configuration
   const options = {
     responsive: true,
+    maintainAspectRatio: false, // Ensure the chart does not maintain the aspect ratio
     plugins: {
       legend: {
         display: false, // Disable the default legend
@@ -117,26 +118,32 @@ function DashboardCard04({ fetchedChartData }) {
       const labelText = document.createTextNode(dataset.label);
       label.appendChild(labelText);
 
-      li.appendChild(button);
+      // Append box and label to button
       button.appendChild(box);
       button.appendChild(label);
+
+      // Append button to list item
+      li.appendChild(button);
       ul.appendChild(li);
+
+      // Toggle dataset visibility on click
+      button.addEventListener('click', () => {
+        dataset.hidden = !dataset.hidden;
+        chartInstanceRef.current.update();
+        button.style.opacity = dataset.hidden ? '.3' : '';
+      });
     });
-  }, [chartData]);
+  }, [fetchedChartData]);
 
   return (
-    <div className="flex flex-col col-span-full sm:col-span-6 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-      <header className="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
-        <h2 className="font-semibold text-gray-800 dark:text-gray-100">
-          Pune Store VS Outside Pune
-        </h2>
+    <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm rounded-lg">
+      <header className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+        <h2 className="font-semibold text-gray-800 dark:text-gray-100">Sales by Store</h2>
       </header>
-      <div className="grow max-sm:max-h-[350px] xl:max-h-[650px]">
-        {/* Render the bar chart */}
-        <Bar data={chartData} options={options} width={395} height={148} plugins={[zoomPlugin]} />
+      <div className="grow max-sm:max-h-[250px] xl:max-h-[250px]">
+        <Bar data={chartData} options={options} height={250} />
       </div>
-      <div className="px-5 pt-2 pb-6">
-        {/* Custom legend */}
+      <div className="px-5 py-4">
         <ul ref={legend} className="flex flex-wrap justify-center -m-1"></ul>
       </div>
     </div>

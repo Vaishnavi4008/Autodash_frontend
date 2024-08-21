@@ -29,6 +29,7 @@ const LineChartExample = ({ chartData }) => {
           ],
         },
         options: {
+          maintainAspectRatio: false, // Allows the chart to take the full height of the container
           responsive: true,
           plugins: {
             legend: {
@@ -104,7 +105,7 @@ const LineChartExample = ({ chartData }) => {
 
   return (
     <>
-      <div>
+      <div style={{ height: '300px' }}> {/* Set the fixed height of the chart container */}
         <canvas ref={canvasRef}></canvas>
       </div>
       <div className="px-5 pt-2 pb-6">
@@ -132,7 +133,7 @@ function DashboardCard02({ fetchedChartData }) {
         <header className="flex justify-between items-start mb-2">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">{fetchedChartData.chartTitle}</h2>
         </header>
-        <div className="grow max-sm:max-h-[328px] max-h-[300px]">
+        <div className="grow h-[300px]"> {/* Adjust this div's height to 300px */}
           <LineChartExample chartData={chartData} />
         </div>
       </div>
