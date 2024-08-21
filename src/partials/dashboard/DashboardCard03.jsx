@@ -1,7 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import EditMenu from '../../components/DropdownEditMenu';
 import zoomPlugin from 'chartjs-plugin-zoom'; // Import the zoom plugin
 
 // Register Chart.js modules and the zoom plugin
@@ -24,6 +22,9 @@ function DashboardCard03({ fetchedChartData }) {
 
   useEffect(() => {
     if (canvasRef.current) {
+      const dataLength = fetchedChartData.labels.length;
+      const initialDisplayCount = 15;
+
       chartInstanceRef.current = new Chart(canvasRef.current, {
         type: 'line',
         data: {
@@ -51,7 +52,7 @@ function DashboardCard03({ fetchedChartData }) {
             zoom: {
               pan: {
                 enabled: true,
-                mode: 'xy',
+                mode: 'x',
               },
               zoom: {
                 wheel: {
@@ -60,7 +61,7 @@ function DashboardCard03({ fetchedChartData }) {
                 pinch: {
                   enabled: true, // Enable zooming with touch gestures
                 },
-                mode: 'xy',
+                mode: 'x',
               },
             },
           },
@@ -70,6 +71,8 @@ function DashboardCard03({ fetchedChartData }) {
                 display: true,
                 text: 'Month',
               },
+              min:( dataLength - initialDisplayCount) - 1 < dataLength ? ( dataLength - initialDisplayCount) - 1 : dataLength - 1 , 
+              max:  dataLength - 1, 
             },
             y: {
               title: {
@@ -118,24 +121,7 @@ function DashboardCard03({ fetchedChartData }) {
     <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
       <div className="px-5 pt-5">
         <header className="flex justify-between items-start mb-2">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Orders Delivered</h2>
-          <EditMenu align="right" className="relative inline-flex">
-            <li>
-              <Link className="font-medium text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 flex py-1 px-3" to="#0">
-                Option 1
-              </Link>
-            </li>
-            <li>
-              <Link className="font-medium text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 flex py-1 px-3" to="#0">
-                Option 2
-              </Link>
-            </li>
-            <li>
-              <Link className="font-medium text-sm text-red-500 hover:text-red-600 flex py-1 px-3" to="#0">
-                Remove
-              </Link>
-            </li>
-          </EditMenu>
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">{fetchedChartData.chartName}</h2>
         </header>
         <div className="grow max-sm:max-h-[250px] xl:max-h-[250px]" style={{ height: '300px' }}>
           <canvas ref={canvasRef}></canvas>

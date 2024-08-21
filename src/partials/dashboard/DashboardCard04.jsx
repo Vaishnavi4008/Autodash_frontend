@@ -7,6 +7,8 @@
     const legend = useRef(null);
 
     if (!fetchedChartData) return null;
+    const dataLength = fetchedChartData.labels.length;
+    const initialDisplayCount = 15;
 
     // Define a broader range of colors
     const colors = [
@@ -71,6 +73,8 @@
             size: 8, // Set the font size of the x-axis labels
           },
         },
+        min:( dataLength - initialDisplayCount) - 1 < dataLength ? ( dataLength - initialDisplayCount) - 1 : dataLength - 1 , 
+        max:  dataLength - 1, 
       },
       y: {
         title: {
@@ -83,6 +87,7 @@
   };
 
     useEffect(() => {
+      
       const ul = legend.current;
       if (!ul) return;
 
@@ -129,7 +134,7 @@
       <div className="flex flex-col col-span-full sm:col-span-6 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
         <header className="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
           <h2 className="font-semibold text-gray-800 dark:text-gray-100">
-            Pune Store VS Outside Pune
+            {fetchedChartData.chartName}
           </h2>
         </header>
         <div className="grow max-sm:max-h-[350px] xl:max-h-[650px]">

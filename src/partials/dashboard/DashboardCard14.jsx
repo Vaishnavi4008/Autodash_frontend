@@ -28,6 +28,8 @@ function DashboardCard14({ fetchedChartData }) {
 
   useEffect(() => {
     if (canvasRef.current) {
+      const dataLength = fetchedChartData.labels.length;
+      const initialDisplayCount = 15;
       // Create chart instance
       chartInstanceRef.current = new Chart(canvasRef.current, {
         type: 'scatter',
@@ -61,7 +63,7 @@ function DashboardCard14({ fetchedChartData }) {
             zoom: {
               pan: {
                 enabled: true,
-                mode: 'xy',
+                mode: 'x',
               },
               zoom: {
                 wheel: {
@@ -70,7 +72,7 @@ function DashboardCard14({ fetchedChartData }) {
                 pinch: {
                   enabled: true,
                 },
-                mode: 'xy', // Allow zooming on both x and y axes
+                mode: 'x', // Allow zooming on both x and y axes
               },
             },
           },
@@ -80,6 +82,8 @@ function DashboardCard14({ fetchedChartData }) {
                 display: true,
                 text: 'X Axis',
               },
+              min:( dataLength - initialDisplayCount) - 1 < dataLength ? ( dataLength - initialDisplayCount) - 1 : dataLength - 1 , 
+              max:  dataLength - 1, 
             },
             y: {
               title: {
@@ -130,7 +134,7 @@ function DashboardCard14({ fetchedChartData }) {
     <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
       <div className="px-5 pt-5">
         <header className="flex justify-between items-start mb-2">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Scatter Plot</h2>
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">{fetchedChartData.chartName}</h2>
         
           {/* <EditMenu align="right" className="relative inline-flex">
             <li>

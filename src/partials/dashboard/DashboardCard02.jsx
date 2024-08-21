@@ -12,6 +12,8 @@ const LineChartExample = ({ chartData }) => {
 
   useEffect(() => {
     if (canvasRef.current) {
+      const dataLength = fetchedChartData.labels.length;
+      const initialDisplayCount = 15;
       // Create chart instance
       chartInstanceRef.current = new ChartJS(canvasRef.current, {
         type: 'line',
@@ -42,7 +44,7 @@ const LineChartExample = ({ chartData }) => {
             zoom: {
               pan: {
                 enabled: true,
-                mode: 'xy',
+                mode: 'x',
               },
               zoom: {
                 wheel: {
@@ -51,7 +53,7 @@ const LineChartExample = ({ chartData }) => {
                 pinch: {
                   enabled: true,
                 },
-                mode: 'xy',
+                mode: 'x',
               },
             },
           },
@@ -61,6 +63,8 @@ const LineChartExample = ({ chartData }) => {
                 display: true,
                 text: 'Month',
               },
+              min:( dataLength - initialDisplayCount) - 1 < dataLength ? ( dataLength - initialDisplayCount) - 1 : dataLength - 1 , 
+              max:  dataLength - 1, 
             },
             y: {
               title: {
@@ -136,7 +140,7 @@ function DashboardCard02({ fetchedChartData }) {
     <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
       <div className="px-5 pt-5">
         <header className="flex justify-between items-start mb-2">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">{fetchedChartData.chartTitle}</h2>
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">{fetchedChartData.chartName}</h2>
         </header>
         <div className="grow h-[300px]"> {/* Adjust this div's height to 300px */}
           <LineChartExample chartData={chartData} />
