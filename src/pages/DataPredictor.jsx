@@ -220,8 +220,13 @@ const DataPredictor = () => {
   const [dateColumn, setDateColumn] = useState("");
   const [errors, setErrors] = useState({});
 
+  const [suggestion, setSuggestion] = useState("");
+
+  console.log({suggestion});
+  
+
   // Handlers
-  const handleFileInput = (e) => {
+  const handleFileInput = async (e) => {
     const file = e.target.files[0];
     if (file) {
       setFileInput1(file);
@@ -238,6 +243,38 @@ const DataPredictor = () => {
           console.error("Error parsing CSV:", error);
         },
       });
+      const formData = new FormData();
+      formData.append("code", fileInput1);
+      axios
+        .post("http://localhost:5000/upload_csv", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then(async (response) => {
+          if (response.data.error) {
+            setPredictionText(response.data.error);
+            return;
+          }
+          if (response.data.filePath === undefined) {
+            setPredictionText("Error in file upload");
+            return;
+          }
+
+          const formData2 = new FormData();
+          formData2.append("csv_path", response.data.filePath);
+
+          axios
+            .post("http://localhost:5000/ml/suggest", formData2, {
+              headers: { "Content-Type": "application/json" },
+            })
+            .then((response) => {
+              setSuggestion(response.data.suggestion);
+            })
+            .catch((error) => {
+              console.log(error.message);
+            });
+        });
     }
   };
 
@@ -372,8 +409,10 @@ const DataPredictor = () => {
               fileInput1={fileInput1}
             />
           </Grid>
+
           {columns.length > 0 && (
             <>
+              <div style={{padding:"20px",textAlign:"justify"}}>{suggestion && <p>Suggestion: {suggestion}</p>}</div>
               <Grid item xs={12}>
                 <TargetColumnSelector
                   columns={columns}
