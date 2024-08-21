@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { Scatter } from 'react-chartjs-2';
 import EditMenu from '../../components/DropdownEditMenu';
 import { tailwindConfig } from '../../utils/Utils';
-import { Chart, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend, } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
-// Register Chart.js modules
-Chart.register(CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
+// Register Chart.js modules and plugins
+Chart.register(CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend, zoomPlugin);
 
 function DashboardCard14({ fetchedChartData }) {
   const canvasRef = useRef(null);
@@ -55,6 +56,21 @@ function DashboardCard14({ fetchedChartData }) {
               align: 'top',
               font: {
                 weight: 'bold',
+              },
+            },
+            zoom: {
+              pan: {
+                enabled: true,
+                mode: 'xy',
+              },
+              zoom: {
+                wheel: {
+                  enabled: true, // Enable zoom on scroll
+                },
+                pinch: {
+                  enabled: true,
+                },
+                mode: 'xy', // Allow zooming on both x and y axes
               },
             },
           },

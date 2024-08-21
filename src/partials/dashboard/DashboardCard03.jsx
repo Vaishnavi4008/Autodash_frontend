@@ -1,13 +1,12 @@
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Line } from 'react-chartjs-2';
+import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom'; // Import the zoom plugin
 import EditMenu from '../../components/DropdownEditMenu';
 import { tailwindConfig } from '../../utils/Utils';
-import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-// import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-// Register Chart.js modules
-Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+// Register Chart.js modules and the zoom plugin
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, zoomPlugin);
 
 function DashboardCard03({ fetchedChartData }) {
   const canvasRef = useRef(null);
@@ -52,12 +51,19 @@ function DashboardCard03({ fetchedChartData }) {
               display: true,
               text: 'Multiple Line Chart Example',
             },
-            datalabels: {
-              display: true,
-              color: 'white',
-              align: 'top',
-              font: {
-                weight: 'bold',
+            zoom: {
+              pan: {
+                enabled: true,
+                mode: 'xy',
+              },
+              zoom: {
+                wheel: {
+                  enabled: true,
+                },
+                pinch: {
+                  enabled: true,
+                },
+                mode: 'xy',
               },
             },
           },
