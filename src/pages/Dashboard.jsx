@@ -15,7 +15,7 @@ import DataChat from "./DataChat";
 
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [pageNo, setpageNo] = useState(2);
+  const [pageNo, setpageNo] = useState(0);
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
