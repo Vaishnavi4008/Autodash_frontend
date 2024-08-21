@@ -94,7 +94,8 @@ const LineChartExample = ({ chartData }) => {
           colorBox.style.display = 'inline-block';
           colorBox.style.marginRight = '8px';
 
-          const text = document.createTextNode(dataset.label);
+          const text = document.createTextNode(dataset.lineLabels
+          );
 
           li.appendChild(colorBox);
           li.appendChild(text);
@@ -140,7 +141,10 @@ function DashboardCard02({ fetchedChartData }) {
     <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
       <div className="px-5 pt-5">
         <header className="flex justify-between items-start mb-2">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">{fetchedChartData.chartName}</h2>
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
+  {fetchedChartData.chartName ? fetchedChartData.chartName : 'Default Chart Title'}
+</h2>
+
         </header>
         <div className="grow h-[300px]"> {/* Adjust this div's height to 300px */}
           <LineChartExample chartData={chartData} />

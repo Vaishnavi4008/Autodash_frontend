@@ -26,7 +26,8 @@
     const chartData = {
       labels: fetchedChartData.labels,
       datasets: fetchedChartData.dataset.map((dataItem, index) => ({
-        label: dataItem.label || `Dataset ${index + 1}`, // Use dataset's label
+        label: dataItem.lineLabels
+        || `Dataset ${index + 1}`, // Use dataset's label
         data: dataItem.data,
         backgroundColor: colors[index % colors.length], // Cycle through colors
         hoverBackgroundColor: colors[index % colors.length],

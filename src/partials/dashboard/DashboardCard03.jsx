@@ -30,7 +30,8 @@ function DashboardCard03({ fetchedChartData }) {
         data: {
           labels: fetchedChartData.labels || [],
           datasets: fetchedChartData.dataset.map((dataItem, index) => ({
-            label: dataItem.label || `Dataset ${index + 1}`,
+            label: dataItem.lineLabels
+            || `Dataset ${index + 1}`,
             data: dataItem.data || [],
             borderColor: colors[index % colors.length],
             backgroundColor: colors[index % colors.length],
