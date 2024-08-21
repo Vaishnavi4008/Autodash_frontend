@@ -40,7 +40,7 @@ const modelRouteMapping = [
   { model: "Decision Tree", route: "/ml/decision_tree", time_series: false },
   { model: "XG Boost", route: "/ml/xg_boost", time_series: false },
   { model: "Cat Boost", route: "/ml/cat_boost", time_series: false },
-  { model: "LSTM", route: "/ml/lstm", time_series: true },
+  { model: "LSTM", route: "/ml/lstmm", time_series: true },
   { model: "Exponential Smoothing", route: "/ml/ex", time_series: true },
   { model: "ARIMA", route: "/ml/arima", time_series: true },
 ];
