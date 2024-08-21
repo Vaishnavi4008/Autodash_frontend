@@ -187,7 +187,7 @@ const DashboardCreator = ({pageNo}) => {
       "code": "import pandas as pd\nimport matplotlib.pyplot as plt\n\ndef read_csv_and_plot(path_to_csv_file):\n    # Read the CSV file\n    dfs = pd.read_csv(path_to_csv_file)\n    \n    # Extract data for scatter plot\n    data = dfs[['feature_a', 'feature_b']].values.tolist()\n    \n    # Create the result dictionary\n    result = {\n        'dataset': [\n            {\n                'x-axis': 'Feature A',\n                'y-axis': 'Feature B',\n                'label': 'Scatter Plot Example',\n                'data': [{'x': x[0], 'y': x[1]} for x in data]\n            }\n        ],\n        'chartTitle': 'Scatter Plot Example'\n    }\n    \n    return result\n\n# Call the function and store the result in the \"results\" variable\nresults = read_csv_and_plot(\"F:/Mayur/vit/innov8ors/ollama/AutoDash/app/csv/test-new.csv\")"
     },
     
-  ]);
+  );
   const [isDataFetched, setIsDataFetched] = useState(true);
 
   const promptMap = {
