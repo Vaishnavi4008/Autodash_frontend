@@ -222,8 +222,7 @@ const DataPredictor = () => {
 
   const [suggestion, setSuggestion] = useState("");
 
-  console.log({suggestion});
-  
+  console.log({ suggestion });
 
   // Handlers
   const handleFileInput = async (e) => {
@@ -289,21 +288,21 @@ const DataPredictor = () => {
     if (!targetColumn) {
       newErrors.targetColumn = "Target column is required.";
       console.log("Target column is required.");
-      
+
       valid = false;
     }
 
     if (!isTimeSeries && !featureColumn) {
       newErrors.featureColumn = "Feature column is required.";
       console.log("Feature column is required.");
-      
+
       valid = false;
     }
 
     if (!selectedModel) {
       newErrors.selectedModel = "Model selection is required.";
       console.log("Model selection is required.");
-      
+
       valid = false;
     }
 
@@ -311,7 +310,7 @@ const DataPredictor = () => {
       if (!featureValue) {
         newErrors.featureValue = "Feature value is required.";
         console.log("Feature value is required.");
-        
+
         valid = false;
       }
     }
@@ -403,7 +402,6 @@ const DataPredictor = () => {
         });
     } else {
       console.log("Form validation failed.");
-      
     }
   };
 
@@ -420,7 +418,9 @@ const DataPredictor = () => {
 
           {columns.length > 0 && (
             <>
-              <div style={{padding:"20px",textAlign:"justify"}}>{suggestion && <p>Suggestion: {suggestion}</p>}</div>
+              <div style={{ padding: "20px", textAlign: "justify" }}>
+                {suggestion && <p>Suggestion: {suggestion}</p>}
+              </div>
               <Grid item xs={12}>
                 <TargetColumnSelector
                   columns={columns}
@@ -468,16 +468,18 @@ const DataPredictor = () => {
                   error={errors.selectedModel}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FeatureInput
-                  featureColumn={featureColumn}
-                  featureValue={featureValue}
-                  handleFeatureChange={handleFeatureChange}
-                  selectedDate={selectedDate}
-                  setSelectedDate={setSelectedDate}
-                  error={errors.featureValue}
-                />
-              </Grid>
+              {!isTimeSeries && (
+                <Grid item xs={12}>
+                  <FeatureInput
+                    featureColumn={featureColumn}
+                    featureValue={featureValue}
+                    handleFeatureChange={handleFeatureChange}
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                    error={errors.featureValue}
+                  />
+                </Grid>
+              )}
               <Grid item xs={12}>
                 <SubmitButton onSubmit={handleSubmit} />
               </Grid>
