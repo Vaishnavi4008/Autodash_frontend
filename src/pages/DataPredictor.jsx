@@ -40,7 +40,7 @@ const modelRouteMapping = [
   { model: "Decision Tree", route: "/ml/decision_tree", time_series: false },
   { model: "XG Boost", route: "/ml/xg_boost", time_series: false },
   { model: "Cat Boost", route: "/ml/cat_boost", time_series: false },
-  { model: "LSTM", route: "/ml/lstm", time_series: true },
+  { model: "LSTM", route: "/ml/lstmm", time_series: true },
   { model: "Exponential Smoothing", route: "/ml/ex", time_series: true },
   { model: "ARIMA", route: "/ml/arima", time_series: true },
 ];
@@ -222,8 +222,7 @@ const DataPredictor = () => {
 
   const [suggestion, setSuggestion] = useState("");
 
-  console.log({suggestion});
-  
+  console.log({ suggestion });
 
   // Handlers
   const handleFileInput = async (e) => {
@@ -288,27 +287,32 @@ const DataPredictor = () => {
 
     if (!targetColumn) {
       newErrors.targetColumn = "Target column is required.";
+      console.log("Target column is required.");
+
       valid = false;
     }
 
     if (!isTimeSeries && !featureColumn) {
       newErrors.featureColumn = "Feature column is required.";
+      console.log("Feature column is required.");
+
       valid = false;
     }
 
     if (!selectedModel) {
       newErrors.selectedModel = "Model selection is required.";
+      console.log("Model selection is required.");
+
       valid = false;
     }
 
     if (!isTimeSeries) {
       if (!featureValue) {
         newErrors.featureValue = "Feature value is required.";
+        console.log("Feature value is required.");
+
         valid = false;
       }
-    } else if (!selectedDate) {
-      newErrors.date = "Date is required for time series predictions.";
-      valid = false;
     }
 
     setErrors(newErrors);
@@ -381,7 +385,14 @@ const DataPredictor = () => {
               }
 
               if (isTimeSeries) {
-                setPredictionText(response.data.forecast);
+                const data = JSON.parse(response.data.forecast);
+                setPredictionText(
+                  <>
+                    <p>Predicted value: {data[0]}</p>
+                    <p>Mean Squared Error: {data[1]}</p>
+                    <p>R2 Score: {data[2]}</p>
+                  </>
+                );
                 setGraphImage(response.data.url);
               } else {
                 // [5.870987341992519, 21.646449773466514, 0.08386263934122229]
@@ -396,6 +407,8 @@ const DataPredictor = () => {
               }
             });
         });
+    } else {
+      console.log("Form validation failed.");
     }
   };
 
@@ -412,7 +425,9 @@ const DataPredictor = () => {
 
           {columns.length > 0 && (
             <>
-              <div style={{padding:"20px",textAlign:"justify"}}>{suggestion && <p>Suggestion: {suggestion}</p>}</div>
+              <div style={{ padding: "20px", textAlign: "justify" }}>
+                {suggestion && <p>Suggestion: {suggestion}</p>}
+              </div>
               <Grid item xs={12}>
                 <TargetColumnSelector
                   columns={columns}
@@ -460,16 +475,18 @@ const DataPredictor = () => {
                   error={errors.selectedModel}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FeatureInput
-                  featureColumn={featureColumn}
-                  featureValue={featureValue}
-                  handleFeatureChange={handleFeatureChange}
-                  selectedDate={selectedDate}
-                  setSelectedDate={setSelectedDate}
-                  error={errors.featureValue}
-                />
-              </Grid>
+              {!isTimeSeries && (
+                <Grid item xs={12}>
+                  <FeatureInput
+                    featureColumn={featureColumn}
+                    featureValue={featureValue}
+                    handleFeatureChange={handleFeatureChange}
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                    error={errors.featureValue}
+                  />
+                </Grid>
+              )}
               <Grid item xs={12}>
                 <SubmitButton onSubmit={handleSubmit} />
               </Grid>
