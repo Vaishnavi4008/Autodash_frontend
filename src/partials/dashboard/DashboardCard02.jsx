@@ -12,7 +12,7 @@ const LineChartExample = ({ chartData }) => {
 
   useEffect(() => {
     if (canvasRef.current) {
-      const dataLength = fetchedChartData.labels.length;
+      const dataLength = chartData.labels.length;
       const initialDisplayCount = 15;
       // Create chart instance
       chartInstanceRef.current = new ChartJS(canvasRef.current, {
