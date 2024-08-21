@@ -1,80 +1,197 @@
-# Free Tailwind dashboard template
+# AutoDash
 
-![Mosaic TailwindCSS template preview](https://github.com/cruip/tailwind-dashboard-template/assets/2683512/ef306423-3b89-4d0c-be80-9c5c682478d1)
+AutoDash is an advanced tool designed to revolutionize data analysis by automating the creation of interactive dashboards from multiple data sources. Leveraging a fine-tuned Llama3 LLM specifically tailored for data analytics, AutoDash transforms complex data into actionable insights through real-time updates and intuitive natural language interactions. This tool prioritizes security, ensuring that all data processing stays within the company's servers, providing dynamic visualizations and empowering businesses to make informed decisions effortlessly.
 
-**Mosaic Lite** is a responsive dashboard template built on top of TailwindCSS and fully coded in React. It comes with several pre-coded charts (built with Chart.js 3) and widgets, and it's a great starting for anyone who wants to create a user interface for SaaS products, administrator dashboards, modern web apps, and more.
+---
 
-Use it for whatever you want, and be sure to reach us out on [Twitter](https://twitter.com/Cruip_com) if you build anything cool/useful with it.
+## Table of Contents
 
-Created and maintained with ❤️ by [Cruip.com](https://cruip.com/).
+- [Project Overview](#project-overview)
+- [Prerequisites](#prerequisites)
+- [Setup Instructions](#setup-instructions)
+  - [Backend Repository - Python (AutoDash API)](#1-backend-repository---python-autodash-api)
+  - [Frontend Repository - React (AutoDash Frontend)](#2-frontend-repository---react-autodash-frontend)
+  - [Backend Repository - Java (AutoDash Java API)](#3-backend-repository---java-autodash-java-api)
+- [Tech Stack](#tech-stack)
+- [Usage](#usage)
+- [Contribution Guidelines](#contribution-guidelines)
+- [FAQs](#faqs)
+- [Roadmap](#roadmap)
 
-## Live demo
+---
 
-Check the live demo here 👉️ [https://mosaic.cruip.com/](https://mosaic.cruip.com/)
+## Project Overview
 
-## Mosaic Pro
+AutoDash is a cutting-edge solution designed to simplify the data analysis process by automating the creation of interactive, real-time dashboards. With a secure in-house processing system, AutoDash ensures that your data remains within your company’s infrastructure, offering both efficiency and peace of mind. The tool's AI-driven insights and dynamic visualizations empower businesses to make informed decisions quickly and accurately.
 
-[![Mosaic Tailwind Admin Template](https://github.com/cruip/tailwind-dashboard-template/assets/2683512/2b4d0fae-bb07-4229-8a8a-48005f2f33cb)](https://cruip.com/mosaic/)
+---
 
-## Design files
+## Prerequisites
 
-If you need the design files, you can download them from Figma's Community 👉 https://bit.ly/3sigqHe
+Before you begin, ensure you have the following installed:
 
-## Table of contents
+- **Python 3.8+**
+- **Node.js** and **NPM**
+- **JDK 21**
+- **Maven**
+- **MySQL**
+- **Nginx**
 
-* [Usage](#usage)
-  * [Project setup](#project-setup)
-  * [Compiles and hot-reloads for development](#compiles-and-hot-reloads-for-development)
-  * [Compiles and minifies for production](#compiles-and-minifies-for-production)
-  * [Customize configuration](#customize-configuration)
-* [Support notes](#support-notes)            
-* [Credits](#credits)
-* [Terms and License](#terms-and-license)
-* [About Us](#about-us)
-* [Stay in the loop](#stay-in-the-loop)
+---
+
+## Setup Instructions
+
+### 1. Backend Repository - Python (AutoDash API)
+
+#### Repository Link: [AutoDash API](https://github.com/techcodebhavesh/AutoDash)
+
+**Steps:**
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/techcodebhavesh/AutoDash.git
+   cd AutoDash
+   ```
+
+2. **Create a Python Virtual Environment**:
+   ```bash
+   python3 -m venv pyenv
+   source pyenv/bin/activate
+   ```
+
+3. **Install Required Packages**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Environment Configuration**:
+   - Copy the example environment file:
+     ```bash
+     cp .env.example .env
+     ```
+   - Edit the `.env` file with your credentials and other required configurations.
+
+5. **Run the Flask Server**:
+   ```bash
+   python run.py
+   ```
+
+6. **Nginx Setup**:
+   - Ensure Nginx is installed and configured to proxy requests to the Flask server.
+
+---
+
+### 2. Frontend Repository - React (AutoDash Frontend)
+
+#### Repository Link: [AutoDash Frontend](https://github.com/Vaishnavi4008/Autodash_frontend)
+
+**Steps:**
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/Vaishnavi4008/Autodash_frontend.git
+   cd Autodash_frontend
+   ```
+
+2. **Environment Configuration**:
+   - Copy the example environment file:
+     ```bash
+     cp .env.example .env
+     ```
+   - Edit the `.env` file with your credentials or any required configuration changes.
+
+3. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+
+4. **Run the Development Server**:
+   ```bash
+   npm run dev
+   ```
+   - This will start the Vite development server, and the frontend will be accessible at `http://localhost:5173`.
+
+---
+
+### 3. Backend Repository - Java (AutoDash Java API)
+
+#### Repository Link: [AutoDash Java API](https://github.com/SpectacularVoyager/AutodashJava)
+
+**Steps:**
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/SpectacularVoyager/AutodashJava.git
+   cd AutodashJava
+   ```
+
+2. **Install JDK 21**:
+   - Ensure that JDK 21 is installed on your system.
+
+3. **Build the Project**:
+   ```bash
+   mvn clean install
+   ```
+
+4. **Run the Spring Boot Application**:
+   ```bash
+   mvn spring-boot:run
+   ```
+
+5. **Database Setup**:
+   - SQL files are located in the `res/sql.sql` directory.
+   - Configure MySQL settings in `src/main/resources/jdbc.properties`.
+
+---
+
+## Tech Stack
+
+- **Backend**: Flask (Python), Spring Boot (Java)
+- **Frontend**: React (JavaScript), Vite
+- **Database**: MySQL
+- **Other**: Nginx, Maven, JDK 21
+
+---
 
 ## Usage
 
-This project was bootstrapped with [Vite](https://vitejs.dev/).
+Once all services are running, you can access AutoDash through your browser at `http://localhost:5173`.
 
-### Project setup
-```
-npm install
-```
+- **Data Integration**: Connect multiple data sources through the dashboard.
+- **Natural Language Queries**: Use the fine-tuned Llama3 LLM for intuitive data queries.
+- **Dynamic Visualizations**: Customize and interact with data visualizations in real time.
 
-#### Compiles and hot-reloads for development
-```
-npm run dev
-```
+---
 
-#### Compiles and minifies for production
-```
-npm run build
-```
+## Contribution Guidelines
 
-#### Customize configuration
-See [Configuration Reference](https://vitejs.dev/guide/).
+We welcome contributions to AutoDash! Please follow these steps to contribute:
 
-### Support notes
-We are shipping our templates with a very basic React configuration to let you quickly get into the development process, but we don't discourage you from using any other configuration or framework built on the top of React. So, please note that any request dealing with React (e.g. extra features, customisations, et cetera) is to be considered out of the support scope.
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Make your changes and commit them (`git commit -m 'Add some feature'`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Open a Pull Request.
 
-For more information about what support covers, please see our (FAQs)[https://cruip.com/faq/].
+For more details, refer to our `CONTRIBUTING.md` file.
 
-## Credits
+---
 
-- [Nucleo](https://nucleoapp.com/)
+## FAQs
 
-## Terms and License
+**Q: What if I encounter a `ModuleNotFoundError`?**
+A: Ensure all dependencies are installed as per the `requirements.txt` or `package.json` files.
 
-- Released under the [GPL](https://www.gnu.org/licenses/gpl-3.0.html).
-- Copyright 2020 [Cruip](https://cruip.com/).
-- Use it for personal and commercial projects, but please don’t republish, redistribute, or resell the template.
-- Attribution is not required, although it is really appreciated.
+**Q: How do I configure MySQL for the Java backend?**
+A: Edit the `jdbc.properties` file in `src/main/resources` with your MySQL credentials.
 
-## About Us
+**Q: How do I set up Nginx for the Python backend?**
+A: Follow standard Nginx setup procedures, ensuring it proxies requests to the Flask server.
 
-We're an Italian developer/designer duo creating high-quality design/code resources for developers, makers, and startups.
+---
 
-## Stay in the loop
+## Roadmap
 
-If you would like to know when we release new resources, you can follow us on [Twitter](https://twitter.com/Cruip_com), or you can subscribe to our monthly [newsletter](https://cruip.com/#subscribe).
+- **Version 2.0**: Multi-tenant support and enhanced security features.
+- **Version 3.0**: Expanded LLM capabilities for more complex data queries.
+- **Future Plans**: Integration with more data sources and enhanced visualization options.
