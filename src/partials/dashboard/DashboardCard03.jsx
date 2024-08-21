@@ -38,22 +38,29 @@ function DashboardCard03({ fetchedChartData }) {
           })),
         },
         options: {
-          maintainAspectRatio: false, // Disable the aspect ratio
-          responsive: true, // Ensure the chart is responsive
+          maintainAspectRatio: false,
+          responsive: true,
           plugins: {
             legend: {
-              display: false, // Disable default legend
+              display: false,
             },
             title: {
               display: true,
               text: 'Multiple Line Chart Example',
             },
-            datalabels: {
-              display: true,
-              color: 'white',
-              align: 'top',
-              font: {
-                weight: 'bold',
+            zoom: {
+              pan: {
+                enabled: true,
+                mode: 'xy',
+              },
+              zoom: {
+                wheel: {
+                  enabled: true, // Enable zooming with the mouse wheel
+                },
+                pinch: {
+                  enabled: true, // Enable zooming with touch gestures
+                },
+                mode: 'xy',
               },
             },
           },
