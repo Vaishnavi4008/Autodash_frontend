@@ -83,7 +83,7 @@ const DataChat = () => {
     fileInput2 && formData.append("code", fileInput2);
     formData.append("prompt", prompt);
     axios
-      .post("http://localhost:5000/chat", formData, {
+      .post(`${process.env.PYTHON_URI}/chat`, formData, {
         headers: {
           "Content-Type": fileInput2
             ? "multipart/form-data"
