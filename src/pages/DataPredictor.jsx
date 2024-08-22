@@ -422,6 +422,9 @@ const DataPredictor = () => {
               fileInput1={fileInput1}
             />
           </Grid>
+          <div className="bg-white p-7 m-5 rounded mx-auto">
+            This feature only Works locally for now
+          </div>
 
           {columns.length > 0 && (
             <>
