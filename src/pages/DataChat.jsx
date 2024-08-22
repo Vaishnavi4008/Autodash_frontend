@@ -143,6 +143,7 @@ const DataChat = () => {
   return (
     <div className="flex flex-col items-center h-screen">
       <div className="flex flex-wrap gap-4 mb-8">
+        <div className="bg-white p-7 rounded mx-auto">This feature only Works locally for now</div>
         <button
           className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
           onClick={() => handleConnectClick("MySQL")}
