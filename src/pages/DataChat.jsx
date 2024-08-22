@@ -74,19 +74,21 @@ const DataChat = () => {
   };
 
   console.log(fileInput2);
-  console.log(Boolean(fileInput2)); 
+  console.log(Boolean(fileInput2));
 
-  
   const handleAddHistory = async (request, response) => {
     try {
-      const res = await fetch("https://localhost/java/api/chat/addHistory", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ request, response }),
-      });
-  
+      const res = await fetch(
+        `${process.env.SPRINGURI}/java/api/chat/addHistory`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ request, response }),
+        }
+      );
+
       if (res.ok) {
         console.log("Chat history added successfully.");
       } else {
@@ -96,20 +98,20 @@ const DataChat = () => {
       console.error("Error adding chat history:", error);
     }
   };
-  
-  
 
   const handleSubmit = () => {
     setIsDataFetched(false);
-  
+
     const formData = new FormData();
     if (fileInput2) formData.append("code", fileInput2);
     formData.append("prompt", prompt);
-  
+
     axios
       .post(`${process.env.PYTHON_URI}/chat`, formData, {
         headers: {
-          "Content-Type": fileInput2 ? "multipart/form-data" : "application/json",
+          "Content-Type": fileInput2
+            ? "multipart/form-data"
+            : "application/json",
         },
       })
       .then((res) => {
@@ -117,7 +119,9 @@ const DataChat = () => {
         setPromptResult(
           output.response_type === "Plot" ? (
             <img
-              src={`http://localhost/${output.latest_image_url.split("html")[1]}`}
+              src={`${process.env.BASEURI}/${
+                output.latest_image_url.split("html")[1]
+              }`}
               alt="plot"
               style={{ width: "100%", height: "100%" }}
             />
@@ -133,7 +137,7 @@ const DataChat = () => {
         setIsDataFetched(true);
       });
   };
-  
+
   console.log({ promptResult });
 
   return (

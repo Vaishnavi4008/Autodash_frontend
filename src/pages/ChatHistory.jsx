@@ -22,7 +22,7 @@ function ChatHistory() {
   useEffect(() => {
     const fetchChatHistory = async () => {
       try {
-        const response = await fetch("https://localhost/java/api/chat/getHistory", {
+        const response = await fetch(`${process.env.SPRINGURI}/java/api/chat/getHistory`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
