@@ -120,6 +120,8 @@ const DataChat = () => {
               alt="plot"
               style={{ width: "100%", height: "100%" }}
             />
+          ) : output.response_type === "DataFrame" ? (
+            <p dangerouslySetInnerHTML={{ __html: output.response }}></p>
           ) : (
             <p>{output.response}</p>
           )
@@ -153,9 +155,9 @@ const DataChat = () => {
           <span className="ml-3 max-xs:sr-only">Connect with MySQL</span>
         </button>
       </div>
-      <div className="bg-white p-7 m-5 rounded mx-auto">
+      {/* <div className="bg-white p-7 m-5 rounded mx-auto">
         This feature only Works locally for now
-      </div>
+      </div> */}
 
       {/* Conditionally render the form based on the selected DB */}
       {formVisible && (
