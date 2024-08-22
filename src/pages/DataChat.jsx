@@ -79,7 +79,7 @@ const DataChat = () => {
   const handleAddHistory = async (request, response) => {
     try {
       const res = await fetch(
-        `${process.env.SPRINGURI}/java/api/chat/addHistory`,
+        `/java/api/chat/addHistory`,
         {
           method: "POST",
           headers: {
@@ -107,7 +107,7 @@ const DataChat = () => {
     formData.append("prompt", prompt);
 
     axios
-      .post(`${process.env.PYTHON_URI}/chat`, formData, {
+      .post(`/ml/chat`, formData, {
         headers: {
           "Content-Type": fileInput2
             ? "multipart/form-data"
@@ -119,7 +119,7 @@ const DataChat = () => {
         setPromptResult(
           output.response_type === "Plot" ? (
             <img
-              src={`${process.env.BASEURI}/${
+              src={`/${
                 output.latest_image_url.split("html")[1]
               }`}
               alt="plot"

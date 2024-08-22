@@ -245,7 +245,7 @@ const DataPredictor = () => {
       const formData = new FormData();
       formData.append("code", fileInput1);
       axios
-        .post(`${process.env.PYTHON_URI}/upload_csv`, formData, {
+        .post(`/ml/upload_csv`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -264,7 +264,7 @@ const DataPredictor = () => {
           formData2.append("csv_path", response.data.filePath);
 
           axios
-            .post(`${process.env.PYTHON_URI}/ml/suggest`, formData2, {
+            .post(`${process.env.REACT_APP_PYTHON_URI}/ml/suggest`, formData2, {
               headers: { "Content-Type": "application/json" },
             })
             .then((response) => {
@@ -338,7 +338,7 @@ const DataPredictor = () => {
       const formData = new FormData();
       formData.append("code", fileInput1);
       axios
-        .post(`${process.env.PYTHON_URI}/upload_csv`, formData, {
+        .post(`/ml/upload_csv`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -367,7 +367,7 @@ const DataPredictor = () => {
 
           axios
             .post(
-              `${process.env.PYTHON_URI}${
+              `${process.env.REACT_APP_PYTHON_URI}${
                 modelRouteMapping.find((model) => model.model === selectedModel)
                   .route
               }`,
