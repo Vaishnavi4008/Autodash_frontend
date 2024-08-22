@@ -264,7 +264,7 @@ const DataPredictor = () => {
           formData2.append("csv_path", response.data.filePath);
 
           axios
-            .post(`${process.env.REACT_APP_PYTHON_URI}/ml/suggest`, formData2, {
+            .post(`/ml/suggest`, formData2, {
               headers: { "Content-Type": "application/json" },
             })
             .then((response) => {
@@ -367,7 +367,7 @@ const DataPredictor = () => {
 
           axios
             .post(
-              `${process.env.REACT_APP_PYTHON_URI}${
+              `${
                 modelRouteMapping.find((model) => model.model === selectedModel)
                   .route
               }`,
