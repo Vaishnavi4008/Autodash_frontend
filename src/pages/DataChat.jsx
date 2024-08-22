@@ -74,44 +74,58 @@ const DataChat = () => {
   };
 
   console.log(fileInput2);
-  console.log(Boolean(fileInput2));
+  console.log(Boolean(fileInput2)); 
+
+  
+  const handleAddHistory = async (request, response) => {
+    try {
+      const res = await fetch("https://localhost/java/api/chat/addHistory", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ request, response }),
+      });
+  
+      if (res.ok) {
+        console.log("Chat history added successfully.");
+      } else {
+        console.error("Failed to add chat history");
+      }
+    } catch (error) {
+      console.error("Error adding chat history:", error);
+    }
+  };
+  
+  
 
   const handleSubmit = () => {
     setIsDataFetched(false);
-    // formdata
+  
     const formData = new FormData();
-    fileInput2 && formData.append("code", fileInput2);
+    if (fileInput2) formData.append("code", fileInput2);
     formData.append("prompt", prompt);
+  
     axios
       .post("http://localhost:5000/chat", formData, {
         headers: {
-          "Content-Type": fileInput2
-            ? "multipart/form-data"
-            : "application/json",
+          "Content-Type": fileInput2 ? "multipart/form-data" : "application/json",
         },
       })
       .then((res) => {
-        console.log(res);
         const output = res.data || {};
-        console.log({ output });
-
-        if (output.response_type === "Plot") {
-          const newURL =
-            "http://localhost/" + output.latest_image_url.split("html")[1];
-          setPromptResult(
+        setPromptResult(
+          output.response_type === "Plot" ? (
             <img
-              src={newURL}
+              src={`http://localhost/${output.latest_image_url.split("html")[1]}`}
               alt="plot"
               style={{ width: "100%", height: "100%" }}
             />
-          );
-        } else if (
-          output.response_type === "Number" ||
-          output.response_type === "String" ||
-          output.response_type === "DataFrame"
-        ) {
-          setPromptResult(<p>{output.response}</p>);
-        }
+          ) : (
+            <p>{output.response}</p>
+          )
+        );
+        handleAddHistory(prompt, output.response);
         setIsDataFetched(true);
       })
       .catch((err) => {
@@ -119,7 +133,7 @@ const DataChat = () => {
         setIsDataFetched(true);
       });
   };
-
+  
   console.log({ promptResult });
 
   return (
