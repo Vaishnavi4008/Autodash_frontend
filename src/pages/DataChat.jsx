@@ -78,16 +78,13 @@ const DataChat = () => {
 
   const handleAddHistory = async (request, response) => {
     try {
-      const res = await fetch(
-        `/java/api/chat/addHistory`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ request, response }),
-        }
-      );
+      const res = await fetch(`/java/api/chat/addHistory`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ request, response }),
+      });
 
       if (res.ok) {
         console.log("Chat history added successfully.");
@@ -119,9 +116,7 @@ const DataChat = () => {
         setPromptResult(
           output.response_type === "Plot" ? (
             <img
-              src={`/${
-                output.latest_image_url.split("html")[1]
-              }`}
+              src={`/${output.latest_image_url.split("html")[1]}`}
               alt="plot"
               style={{ width: "100%", height: "100%" }}
             />
@@ -143,7 +138,6 @@ const DataChat = () => {
   return (
     <div className="flex flex-col items-center h-screen">
       <div className="flex flex-wrap gap-4 mb-8">
-        <div className="bg-white p-7 rounded mx-auto">This feature only Works locally for now</div>
         <button
           className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
           onClick={() => handleConnectClick("MySQL")}
@@ -158,6 +152,9 @@ const DataChat = () => {
           </svg>
           <span className="ml-3 max-xs:sr-only">Connect with MySQL</span>
         </button>
+      </div>
+      <div className="bg-white p-7 m-5 rounded mx-auto">
+        This feature only Works locally for now
       </div>
 
       {/* Conditionally render the form based on the selected DB */}
