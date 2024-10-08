@@ -18,6 +18,7 @@ import DashboardCard14 from "../partials/dashboard/DashboardCard14";
 import DashboardCard15 from "../partials/dashboard/DashboardCard15";
 import DashboardCard16 from "../partials/dashboard/DashboardCard16";
 import axios from "axios";
+import TextWithLineBreaks from "../partials/dashboard/TextWithLineBreaks";
 
 const DataChat = () => {
   const [fileInput2, setFileInput2] = useState("");
@@ -121,7 +122,7 @@ const DataChat = () => {
               style={{ width: "100%", height: "100%" }}
             />
           ) : output.response_type === "DataFrame" ? (
-            <p dangerouslySetInnerHTML={{ __html: output.response }}></p>
+            <TextWithLineBreaks text={output.response} />
           ) : (
             <p>{output.response}</p>
           )
