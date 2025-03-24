@@ -13,6 +13,7 @@ import DashboardCreator from "./DashboardCreator";
 import DataPredictor from "./DataPredictor";
 import DataChat from "./DataChat";
 import ChatHistory from "../pages/ChatHistory";
+import Main from "./Main";
 
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -64,7 +65,17 @@ function Dashboard() {
             </div>
 
             <Routes>
-              <Route exact path="" element={<DashboardCreator pageNo={pageNo} setpageNo={setpageNo} />} />
+              <Route
+                exact
+                path=""
+                element={
+                  <DashboardCreator pageNo={pageNo} setpageNo={setpageNo} />
+                }
+              />
+              <Route
+                path="main"
+                element={<Main pageNo={pageNo} setpageNo={setpageNo} />}
+              />
               <Route path="prediction" element={<DataPredictor />} />
               <Route path="chat" element={<DataChat />} />
               <Route path="history" element={<ChatHistory />} />
