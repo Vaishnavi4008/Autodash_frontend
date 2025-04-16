@@ -134,7 +134,7 @@ function DashboardCard02({ fetchedChartData }) {
   const chartData = {
     chartTitle: fetchedChartData.chartTitle,
     labels: fetchedChartData.labels,
-    data: fetchedChartData.dataset[0].data, // Assuming there's only one dataset
+    data: (fetchedChartData.dataset?.data ?? fetchedChartData.dataset[0]?.data) || [], // Assuming there's only one dataset
   };
 
   return (

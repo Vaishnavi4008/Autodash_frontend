@@ -12,8 +12,10 @@ import { Route, Routes } from "react-router-dom";
 import DashboardCreator from "./DashboardCreator";
 import DataPredictor from "./DataPredictor";
 import DataChat from "./DataChat";
+import AIChat from "./AIChat";
 import ChatHistory from "../pages/ChatHistory";
 import Main from "./Main";
+import AddFileUploader from "./AddFileUploader";
 
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -35,21 +37,18 @@ function Dashboard() {
         <main className="grow">
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
             {/* Dashboard actions */}
-            <div className="sm:flex sm:justify-between sm:items-center mb-8">
+            {/* <div className="sm:flex sm:justify-between sm:items-center mb-8"> */}
               {/* Left: Title */}
-              <div className="mb-4 sm:mb-0">
+              {/* <div className="mb-4 sm:mb-0">
                 <h1 className="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
                   Dashboard
                 </h1>
-              </div>
+              </div> */}
 
               {/* Right: Actions */}
-              <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                {/* Filter button */}
+              {/* <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
                 <FilterButton align="right" />
-                {/* Datepicker built with flatpickr */}
                 <Datepicker align="right" />
-                {/* Add view button */}
                 <button className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white">
                   <svg
                     className="fill-current shrink-0 xs:hidden"
@@ -61,8 +60,8 @@ function Dashboard() {
                   </svg>
                   <span className="max-xs:sr-only">Add View</span>
                 </button>
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
 
             <Routes>
               <Route
@@ -77,7 +76,9 @@ function Dashboard() {
                 element={<Main pageNo={pageNo} setpageNo={setpageNo} />}
               />
               <Route path="prediction" element={<DataPredictor />} />
-              <Route path="chat" element={<DataChat />} />
+              <Route path="ai-chat" element={<AIChat />} />
+              <Route path="add-file" element={<AddFileUploader />} />
+              <Route path="data-chat" element={<DataChat />} />
               <Route path="history" element={<ChatHistory />} />
             </Routes>
           </div>

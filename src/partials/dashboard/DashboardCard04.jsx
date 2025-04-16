@@ -25,7 +25,7 @@
     // Prepare the chart data
     const chartData = {
       labels: fetchedChartData.labels,
-      datasets: fetchedChartData.dataset.map((dataItem, index) => ({
+      datasets: (fetchedChartData.dataset ?? []).map((dataItem, index) => ({
         label: dataItem.lineLabels
         || `Dataset ${index + 1}`, // Use dataset's label
         data: dataItem.data,

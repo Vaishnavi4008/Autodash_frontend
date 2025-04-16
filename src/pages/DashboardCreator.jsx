@@ -23,7 +23,8 @@ import LoaderComponent from "./Loader";
 const DashboardCreator = ({ pageNo, setpageNo }) => {
   const [openCSVUploader, setOpenCSVUploader] = useState(false);
   const [fileInput1, setFileInput1] = useState("");
-  const [generatedChartData, setGeneratedChartData] = useState([]);
+  const [generatedChartData, setGeneratedChartData] = useState([{"chartType": "BAR CHART", "chartData": {"error": "Failed to generate valid code after 5 attempts.", "code": null}}, {"chartType": "PIE CHART", "chartData": {"error": "Failed to generate valid code after 5 attempts.", "code": null}}, {"chartType": "LINE CHART SINGLE", "chartData": {"error": "Failed to generate valid code after 5 attempts.", "code": null}}, {"chartType": "LINE CHART MULTIPLE", "chartData": {"error": "Failed to generate valid code after 5 attempts.", "code": null}}, {"chartType": "SCATTER PLOT", "chartData": {"chartName": "Trend Analysis", "labels": ["US", "ASEAN", "EMIA", "EMIA", "ASEAN", "ASEAN", "US"], "dataset": [{"x-axis": [], "y-axis": []}], "chartTitle": "Trend Analysis"}, "code": "import pandas as pd\nimport matplotlib.pyplot as plt\n\ndef read_and_plot_trend(csv_path):\n    # 1. Read the CSV file\n    df = pd.read_csv(csv_path)\n\n    # 2. Select columns for trend analysis\n    # We'll use the \"1 - October\" to \"12 - September\" columns as the x-axis,\n    # and the \"2,458\" to \"2,011\" columns as the y-axis\n    x_cols = [col for col in df.columns if col.startswith(\"1 - \") and col.endswith(\".1\")]\n    y_cols = [col for col in df.columns if col.startswith(\"2,\") and col.endswith(\"\")]\n\n    # 3. Extract data for a single Scatter Plot\n    x_data = df[x_cols].values.flatten()\n    y_data = df[y_cols].values.flatten()\n\n    # 4. Return the data in the format: date, value\n    results = {\n        \"chartName\": \"Trend Analysis\",\n        \"labels\": list(df[\"Region\"]),  # Use Region as the label\n        \"dataset\": [\n            {\n                \"x-axis\": x_data,\n                \"y-axis\": y_data\n            }\n        ],\n        \"chartTitle\": \"Trend Analysis\"\n    }\n    return results\n\n# Call the function and store the result in the \"results\" variable\ncsv_path = \"F:/Mayur/vit/innov8ors/ollama/AutoDash/app/csv/test-new.csv\"\nresults = read_and_plot_trend(csv_path)\nprint(results)"}]
+  );
   const [isDataFetched, setIsDataFetched] = useState(true);
 
   const handleFileInput = (e) => {
@@ -52,6 +53,15 @@ const DashboardCreator = ({ pageNo, setpageNo }) => {
   // useEffect(() => {
   //   fetchChartData();
   // }, []);
+
+  
+  return (
+    <>
+    <iframe src="http://localhost:8501/" style={{
+      width: "100%",
+      height: "100vh",
+    }} frameborder="0"></iframe></>
+  )
 
   return (
     <>

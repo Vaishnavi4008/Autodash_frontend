@@ -21,7 +21,6 @@ import axios from "axios";
 import TextWithLineBreaks from "../partials/dashboard/TextWithLineBreaks";
 
 const DataChat = () => {
-  const [fileInput1, setFileInput1] = useState("");
   const [fileInput2, setFileInput2] = useState("");
   const [isDataFetched, setIsDataFetched] = useState(true);
   const [prompt, setPrompt] = useState("");
@@ -36,14 +35,6 @@ const DataChat = () => {
     where: "",
   });
   const [formVisible, setFormVisible] = useState("");
-  const [openCSVUploader, setOpenCSVUploader] = useState(false);
-  const [openSQLUploader, setOpenSQLUploader] = useState(false);
-  const [pageNo, setpageNo] = useState(0);
-
-  const handleFileInput = (e) => {
-    console.log(e.target.files[0]);
-    setFileInput1(e.target.files[0]);
-  };
 
   const handleFileInput2 = (e) => {
     console.log(e.target.files[0]);
@@ -147,206 +138,191 @@ const DataChat = () => {
 
   console.log({ promptResult });
 
+  // return (
+  //   <>
+  //     <iframe
+  //       src="http://localhost:8502/"
+  //       style={{
+  //         width: "100%",
+  //         height: "100vh",
+  //       }}
+  //       frameborder="0"
+  //     ></iframe>
+  //   </>
+  // );
+
   return (
     <div className="flex flex-col items-center h-screen">
-      {pageNo === 0 && (
-        <>
-          <div className="flex flex-wrap gap-4 mb-8">
-            <button
-              className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
-              onClick={() => setOpenCSVUploader(true)}
-            >
-              <svg
-                className="fill-current shrink-0"
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-              >
-                <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
-              </svg>
-              <span className="ml-3 max-xs:sr-only">Connect with CSV</span>
-            </button>
-            <button
-              className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
-              onClick={() => setOpenSQLUploader("MySQL")}
-            >
-              <svg
-                className="fill-current shrink-0"
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-              >
-                <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
-              </svg>
-              <span className="ml-3 max-xs:sr-only">Connect with MySQL</span>
-            </button>
-          </div>
-
-          <Backdrop
-            sx={{
-              color: "#fff",
-              zIndex: (theme) => theme.zIndex.drawer + 1,
-            }}
-            open={openSQLUploader}
-            onClick={(e) => {
-              if (!e) return;
-              if (!e.target.className.startsWith) return;
-              if (!e.target.className.startsWith("MuiBackdrop-root")) return;
-              setOpenSQLUploader(false);
-            }}
+      <div className="flex flex-wrap gap-4 mb-8">
+        <button
+          className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
+          onClick={() => handleConnectClick("MySQL")}
+        >
+          <svg
+            className="fill-current shrink-0"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
           >
-            <div className="bg-white p-7 rounded mx-auto">
-              <form
-                style={{ color: "black" }}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setpageNo(1);
-                }}
-              >
-                <div className="flex flex-col gap-4">
-                  <input
-                    type="text"
-                    name="host"
-                    placeholder="Host"
-                    className="p-2 border border-gray-300 rounded"
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="port"
-                    placeholder="Port"
-                    className="p-2 border border-gray-300 rounded"
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="database"
-                    placeholder="Database"
-                    className="p-2 border border-gray-300 rounded"
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="username"
-                    placeholder="Username"
-                    className="p-2 border border-gray-300 rounded"
-                    required
-                  />
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    className="p-2 border border-gray-300 rounded"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </form>
-            </div>
-          </Backdrop>
-          <Backdrop
-            sx={{
-              color: "#fff",
-              zIndex: (theme) => theme.zIndex.drawer + 1,
-            }}
-            open={openCSVUploader}
-            onClick={(e) => {
-              if (!e) return;
-              if (!e.target.className.startsWith) return;
-              if (!e.target.className.startsWith("MuiBackdrop-root")) return;
-              setOpenCSVUploader(false);
-            }}
-          >
-            <div className="flex flex-col items-center justify-center h-screen">
-              {/* click here to upload file or drag and drop a file*/}
-              <div className="bg-white p7 rounded mx-auto">
-                <div
-                  x-data="dataFileDnD()"
-                  className="relative flex flex-col p-4 text-gray-400 border border-gray-500 rounded ml-4 mr-4 mt-4"
-                >
-                  {fileInput1 ? (
-                    <>{fileInput1?.name} uploaded successfully</>
-                  ) : (
-                    <div
-                      x-ref="dnd"
-                      className="relative flex flex-col text-gray-400 border-dashed rounded cursor-pointer"
-                    >
-                      <input
-                        accept="*"
-                        type="file"
-                        multiple
-                        className="absolute inset-0 z-50 w-full h-full p-0 m-0 outline-none opacity-0 cursor-pointer"
-                        title=""
-                        onChange={handleFileInput}
-                      />
-
-                      <div className="flex flex-col items-center justify-center py-10 text-center">
-                        <svg
-                          className="w-6 h-6 mr-1 text-current-50"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
-                        <p className="m-0">
-                          Drag your files here or click in this area.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {/* next  button */}
-                <div style={{ display: "flex" }}>
-                  <button
-                    className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
-                    onClick={() => {
-                      setpageNo(1);
-                      // setIsDataFetched(false);
-                      fetchChartData();
-                      // setTimeout(() => {
-                      //   setIsDataFetched(true);
-                      //   setpageNo(2);
-                      // }, 15000);
-                    }}
-                    style={{
-                      marginTop: "20px",
-                      marginBottom: "20px",
-                      marginLeft: "auto",
-                      marginRight: "auto",
-                    }}
-                  >
-                    {" "}
-                    Next{" "}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </Backdrop>
-          {/* <div className="bg-white p-7 m-5 rounded mx-auto">
+            <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
+          </svg>
+          <span className="ml-3 max-xs:sr-only">Connect with MySQL</span>
+        </button>
+      </div>
+      {/* <div className="bg-white p-7 m-5 rounded mx-auto">
         This feature only Works locally for now
       </div> */}
-        </>
-      )}
 
-      {pageNo === 1 && (
-        <iframe
-          src="http://localhost:7860"
-          style={{ height: "70vh", width: "100%" }}
-          frameBorder="0"
-        ></iframe>
+      {/* Conditionally render the form based on the selected DB */}
+      {formVisible && (
+        <div className="bg-white p-7 rounded mx-auto">
+          <form onSubmit={handleFormSubmit}>
+            <div className="flex flex-col gap-4">
+              <input
+                type="text"
+                name="host"
+                placeholder="Host"
+                value={formData.host}
+                onChange={handleFormChange}
+                className="p-2 border border-gray-300 rounded"
+                required
+              />
+              <input
+                type="text"
+                name="port"
+                placeholder="Port"
+                value={formData.port}
+                onChange={handleFormChange}
+                className="p-2 border border-gray-300 rounded"
+                required
+              />
+              <input
+                type="text"
+                name="database"
+                placeholder="Database"
+                value={formData.database}
+                onChange={handleFormChange}
+                className="p-2 border border-gray-300 rounded"
+                required
+              />
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleFormChange}
+                className="p-2 border border-gray-300 rounded"
+                required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleFormChange}
+                className="p-2 border border-gray-300 rounded"
+                required
+              />
+              <input
+                type="text"
+                name="table"
+                placeholder="Table"
+                value={formData.table}
+                onChange={handleFormChange}
+                className="p-2 border border-gray-300 rounded"
+                required
+              />
+              <input
+                type="text"
+                name="where"
+                placeholder="Where"
+                value={formData.where}
+                onChange={handleFormChange}
+                className="p-2 border border-gray-300 rounded"
+                required
+              />
+              <button
+                type="submit"
+                className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
       )}
+      <div
+        className="bg-white p-7 rounded mx-auto"
+        style={{ display: "flex", alignItems: "center" }}
+      >
+        {/* Input CSV File Section */}
+        <div className="bg-white p-7 rounded mx-auto">
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <div className="relative flex flex-col p-4 text-gray-400 border border-gray-200 rounded">
+              {fileInput2 ? (
+                <>{fileInput2?.name} Uploaded successfully</>
+              ) : (
+                <div className="relative flex flex-col text-gray-400 border-dashed rounded cursor-pointer">
+                  <input
+                    accept="*"
+                    type="file"
+                    multiple
+                    className="absolute inset-0 z-50 w-full h-full p-0 m-0 outline-none opacity-0 cursor-pointer"
+                    onChange={handleFileInput2}
+                  />
+                  <div className="flex flex-col items-center justify-center py-10 text-center">
+                    <svg
+                      className="w-6 h-6 mr-1 text-current-50"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <p className="m-0">
+                      Drag your files here or click in this area.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Prompt Input Section */}
+        <div className="bg-white p-7 rounded mx-auto text-center">
+          <p className="m-0 mt-10">Enter the prompt and click on submit</p>
+          <textarea
+            type="text"
+            className="border-[2px] border-gray-500 rounded p-2"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            style={{ marginTop: "20px" }}
+            rows="4"
+          />
+          <button
+            className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
+            style={{ marginTop: "20px" }}
+            onClick={handleSubmit}
+          >
+            Submit
+          </button>
+          <div>{promptResult}</div>
+        </div>
+
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={!isDataFetched}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      </div>
     </div>
   );
 };

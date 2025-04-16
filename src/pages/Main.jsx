@@ -25,6 +25,15 @@ const Main = ({ pageNo, setpageNo }) => {
 
   return (
     <>
+      <iframe src="http://localhost:8501/" style={{
+      width: "100%",
+      height: "100vh",
+    }} frameborder="0"></iframe>
+    </>
+  );
+
+  return (
+    <>
       {pageNo == 0 && (
         <>
           {/* upload csv or connect with mysql option */}
@@ -73,10 +82,13 @@ const Main = ({ pageNo, setpageNo }) => {
             }}
           >
             <div className="bg-white p-7 rounded mx-auto">
-              <form style={{color:"black"}} onSubmit={(e)=>{
-                e.preventDefault();
-                setpageNo(3);
-              }}>
+              <form
+                style={{ color: "black" }}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setpageNo(3);
+                }}
+              >
                 <div className="flex flex-col gap-4">
                   <input
                     type="text"

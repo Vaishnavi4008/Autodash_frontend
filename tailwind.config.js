@@ -10,6 +10,12 @@ export default {
   theme: {
     extend: {
       colors: {
+        orange: {
+          100: '#e98300',
+        },
+        blue: {
+          100: "#1c2d36",
+        },
         gray: {
           50: '#F9FAFB',
           100: '#F3F4F6',
@@ -128,6 +134,7 @@ export default {
     },
   },
   plugins: [
+    require('@tailwindcss/typography'),
     forms,
     // add custom variant for expanding sidebar
     plugin(({ addVariant, e }) => {
@@ -136,13 +143,4 @@ export default {
       });
     }),
   ],
-  server: {
-    proxy: {
-      '/ml': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
-  },
 };
