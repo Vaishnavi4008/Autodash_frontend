@@ -15,7 +15,7 @@ import ReactMarkdown from "react-markdown";
 import Typography from "@mui/material/Typography";
 import remarkGfm from "remark-gfm";
 import MermaidChart from "./MermaidChart";
-// import "./table.scss";
+import "./table.scss";
 
 const BASE_IMAGE_URL = "https://mayur.mydigicardmanager.com/upload"; // or wherever your files live
 
@@ -168,6 +168,7 @@ export default function AIChat() {
       </Typography> */}
 
       <Box
+        className="black-bullets"
         sx={{
           flexGrow: 1,
           overflowY: "auto",
@@ -243,7 +244,14 @@ export default function AIChat() {
                         <ReactMarkdown
                           key={j}
                           children={subpart}
-                          components={{ blockquote: BlockquoteComponent }}
+                          components={{
+                            blockquote: BlockquoteComponent,
+                            table: ({ node, ...props }) => (
+                              <div style={{ overflowX: "auto" }} className="table-wrapper">
+                                <table {...props} />
+                              </div>
+                            ),
+                          }}
                           remarkPlugins={[remarkGfm]}
                         />
                       ) : (
