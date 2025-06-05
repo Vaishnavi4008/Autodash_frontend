@@ -16,6 +16,7 @@ import Typography from "@mui/material/Typography";
 import remarkGfm from "remark-gfm";
 import MermaidChart from "./MermaidChart";
 import "./table.scss";
+import MermaidChartEnlarged from "./MermaidChartEnlarged";
 
 const BASE_IMAGE_URL = "https://mayur.mydigicardmanager.com/upload"; // or wherever your files live
 
@@ -153,16 +154,33 @@ export default function AIChat() {
         backgroundColor: "#ffffff00",
       }}
     >
-      {/* Overlay */}
       {overlayOpen && (
         <Backdrop
-          sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+          sx={{
+            color: "#fff",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            backgroundColor: "rgba(0,0,0,0.7)",
+          }}
           open={overlayOpen}
           onClick={() => setOverlayOpen(false)}
         >
-          <MermaidChart chart={enlargedChart} style={{ width: "90%" }} />
+          <Box
+            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+            sx={{
+              maxWidth: "95vw",
+              width: "95%",
+              maxHeight: "95vh",
+              overflow: "auto",
+              bgcolor: "white",
+              borderRadius: 2,
+              padding: 2,
+            }}
+          >
+            <MermaidChartEnlarged chart={enlargedChart} />
+          </Box>
         </Backdrop>
       )}
+
       {/* <Typography variant="h2" sx={{ mb: 3 }}>
         DocSearch welcomes you
       </Typography> */}
@@ -202,6 +220,7 @@ export default function AIChat() {
               }}
               onMouseUp={handleTextSelection}
             >
+             
               {/* <ReactMarkdown
                 children={msg.text}
                 components={{
@@ -247,7 +266,10 @@ export default function AIChat() {
                           components={{
                             blockquote: BlockquoteComponent,
                             table: ({ node, ...props }) => (
-                              <div style={{ overflowX: "auto" }} className="table-wrapper">
+                              <div
+                                style={{ overflowX: "auto" }}
+                                className="table-wrapper"
+                              >
                                 <table {...props} />
                               </div>
                             ),
